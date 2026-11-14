@@ -220,6 +220,7 @@ export class Game {
     this.settleReport = { maxDisp, maxSpeed, asleep, total: this.blocks.length };
     this.frameTower();
     this.state = 'idle';
+    this.turnBlock = null;
     this.stillTime = 0;
     this.acc = 0;
   }
@@ -250,6 +251,10 @@ export class Game {
   // ---------------------------------------------------------------- rules
   isPullable(b) {
     if (!b || b.removed) return null;
+    // only allow 1 block touch per turn
+    if (this.turnBlock && !this.turnBlock.removed && b !== this.turnBlock) {
+      return `You already touched ${this.turnBlock.dep.name} - you have to finish pulling it.`;
+    }
     if (b.layer >= this.nLayers - 1) return "The top layer can't be taken.";
     const remaining = this.layout.layers[b.layer].blocks.filter((x) => !x.block.removed).length;
     if (remaining <= 1) return 'That is the last block of its layer.';
@@ -404,6 +409,7 @@ export class Game {
       this.stillTime = this.isCalm() ? this.stillTime + dt : 0;
       if (this.stillTime >= STILL_TIME || this.settleTime > SETTLE_CAP) {
         this.state = 'idle';
+        this.turnBlock = null;
         this.cb.onTurnEnd?.();
       }
     }
@@ -437,6 +443,7 @@ export class Game {
     let em = 0x000000, line = INK;
     if (this.pull?.block === b) { em = new THREE.Color(PLAYER_COLORS[this.playerIndex]).multiplyScalar(0.35).getHex(); }
     else if (b === this.hovered) em = 0x3a3322;
+    else if (b === this.turnBlock) em = new THREE.Color(PLAYER_COLORS[this.playerIndex]).multiplyScalar(0.2).getHex();
     if (b === this.selected) { line = '#d62828'; if (em === 0) em = 0x241c10; }
     for (const m of b.matList) m.emissive.setHex(em);
     b.edges.material.color.set(line);
@@ -527,6 +534,7 @@ export class Game {
     const start = b.body.translation()[a];
     this.pull = { block: b, mx: p.x, my: p.y, vx, vy, vv: len * len, start, target: start };
     this.lastPulled = b;
+    this.turnBlock = b;
     this.state = 'pulling';
     // Hard axis/rotation locks make Rapier treat the block as infinitely "heavy" in friction, which drags the
     // whole layer above along. So we keep it dynamic and steer it with soft springs instead (see applyPull).
