@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dependency Jenga</title>
+  <meta name="description" content="Paste a git repo. Stack its dependencies into a Jenga tower. Pull carefully.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+      "@dimforge/rapier3d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.12.0/rapier.es.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="view"></div>
+
+  <!-- in-game HUD -->
+  <div id="hud" hidden>
+    <header class="hud-top">
+      <div class="brand">Dependency <b>Jenga</b></div>
+      <div class="players" id="players"></div>
+      <div class="hud-actions">
+        <div class="seg" id="limit-seg" title="Number of blocks in the tower">
+          <button data-n="30">30</button><button data-n="54">54</button><button data-n="90">90</button>
+        </div>
+        <button class="btn small" id="btn-new">New repo</button>
+      </div>
+    </header>
+
+    <aside class="card left" id="left">
+      <div class="repo-name" id="repo-name"></div>
+      <div class="muted" id="repo-meta"></div>
+      <div class="stats"><span>Turn <b id="turn-no">1</b></span><span>Blocks <b id="blocks-left">0</b></span></div>
+      <details id="warnings" hidden><summary><span id="warn-count"></span></summary><ul id="warn-list"></ul></details>
+      <details open class="legend-box"><summary>Legend</summary>
+        <div id="kind-legend" class="kind-legend"></div>
+        <div id="mapping-legend-hud" class="mapping-legend"></div>
+      </details>
+    </aside>
+
+    <aside class="card right" id="info" hidden></aside>
+    <div class="removed" id="removed" hidden><span class="removed-title">Pulled out:</span><span id="removed-list"></span></div>
+    <div class="hint-bar" id="hintbar">Drag a block along its length to pull it out. Drag empty space to orbit, wheel to zoom.</div>
+  </div>
+
+  <!-- start screen -->
+  <section id="start" class="screen">
+    <div class="start-inner">
+      <h1>Dependency <span>Jenga</span></h1>
+      <p class="tag">All modern digital infrastructure, resting on a few tiny blocks. Pull carefully.</p>
+      <form id="analyze-form" class="analyze">
+        <input id="repo-url" type="url" placeholder="https://github.com/owner/repo" autocomplete="off" spellcheck="false" required>
+        <button class="btn primary" type="submit">Analyze</button>
+      </form>
+      <div class="row">
+        <button class="btn" id="btn-demo" type="button">Try demo tower</button>
+        <div class="seg-wrap">Blocks
+          <div class="seg" id="start-limit-seg"><button data-n="30">30</button><button data-n="54">54</button><button data-n="90">90</button></div>
+        </div>
+      </div>
+      <div class="error" id="start-error" hidden></div>
+      <div class="explain">
+        <div class="card">
+          <h3>How it works</h3>
+          <p>We read the repo's dependencies and stack them into a tower: languages and runtimes at the bottom, leaf packages on top
+          (like <i>xkcd 2347</i>). Two players take turns pulling a block out. Whoever topples the tower loses.</p>
+        </div>
+        <div class="card">
+          <h3>Real data becomes physics</h3>
+          <div id="mapping-legend" class="mapping-legend"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- loading -->
+  <section id="loading" class="screen" hidden>
+    <div class="loader">
+      <div class="stack"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2 id="loading-msg">Analyzing...</h2>
+      <p class="muted">This can take 10-40 seconds. <span id="loading-time">0s</span></p>
+      <button class="btn small" id="btn-cancel">Cancel</button>
+    </div>
+  </section>
+
+  <!-- game over -->
+  <section id="gameover" class="screen over" hidden>
+    <div class="card over-card">
+      <div class="crash">CRASH</div>
+      <h2 id="over-title"></h2>
+      <p id="over-detail" class="muted"></p>
+      <div class="row">
+        <button class="btn primary" id="btn-rematch">Rematch (same tower)</button>
+        <button class="btn" id="btn-over-new">New repo</button>
+        <button class="btn small" id="btn-over-watch">Watch the rubble</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="tooltip" hidden></div>
+  <div id="toast" hidden></div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
