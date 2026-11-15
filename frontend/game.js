@@ -30,6 +30,9 @@ export class Game {
     this.blocks = [];
     this.world = null;
     this.pull = null;
+    this._v1 = new THREE.Vector3();
+    this._v2 = new THREE.Vector3();
+    this._q1 = new THREE.Quaternion();
     this.pending = null;
     this.hovered = null;
     this.selected = null;
@@ -319,47 +322,47 @@ export class Game {
     if (!p) return;
     const b = p.block, body = b.body;
     const pos = body.translation(), vel = body.linvel();
-    const a = b.axis;
-    const err = p.target - pos[a];
     const m = b.mass;
-    let F = m * OMEGA * OMEGA * err - m * 2 * ZETA * OMEGA * vel[a];
-    const cap = m * FMAX_ACC;
-    F = Math.max(-cap, Math.min(cap, F));
-    // keep the block straight: lateral spring + orientation spring (PD), so it slides out like on rails
-    const perp = a === 'x' ? pos.z : pos.x;
-    const perpV = a === 'x' ? vel.z : vel.x;
-    const Fp = m * 250 * (p.perp0 - perp) - m * 30 * perpV;
+    // Free drag: a damped spring between the grabbed point on the block and the cursor's point in the world.
+    // The force acts at the grab point, so the block is free to slide in any direction, twist and wiggle.
+    const q = body.rotation(), av = body.angvel();
+    const r = this._v1.copy(p.local).applyQuaternion(this._q1.set(q.x, q.y, q.z, q.w)); // anchor offset (world)
+    const ax = pos.x + r.x, ay = pos.y + r.y, az = pos.z + r.z;
+    // velocity of the anchor point: v + w x r
+    const vx = vel.x + av.y * r.z - av.z * r.y;
+    const vy = vel.y + av.z * r.x - av.x * r.z;
+    const vz = vel.z + av.x * r.y - av.y * r.x;
+    const k = m * OMEGA * OMEGA, c = m * 2 * ZETA * OMEGA;
+    let fx = k * (p.target.x - ax) - c * vx;
+    let fy = k * (p.target.y - ay) - c * vy;
+    let fz = k * (p.target.z - az) - c * vz;
+    const cap = m * FMAX_ACC, f = Math.hypot(fx, fy, fz);
+    if (f > cap) { const s = cap / f; fx *= s; fy *= s; fz *= s; }
     body.resetForces(true);
-    body.addForce(a === 'x' ? { x: F, y: 0, z: Fp } : { x: Fp, y: 0, z: F }, true);
-    const q = body.rotation(), q0 = p.q0;
-    // relative rotation q * conj(q0)
-    let rx = q.w * -q0.x + q.x * q0.w + q.y * -q0.z - q.z * -q0.y;
-    let ry = q.w * -q0.y - q.x * -q0.z + q.y * q0.w + q.z * -q0.x;
-    let rz = q.w * -q0.z + q.x * -q0.y - q.y * -q0.x + q.z * q0.w;
-    const rw = q.w * q0.w + q.x * q0.x + q.y * q0.y + q.z * q0.z;
-    const sgn = rw < 0 ? -1 : 1;
-    const I = m * (b.L * b.L + b.w * b.w) / 12 * 3; // generous inertia estimate
-    const av = body.angvel();
     body.resetTorques(true);
-    body.addTorque({
-      x: I * (-400 * 2 * sgn * rx - 30 * av.x),
-      y: I * (-400 * 2 * sgn * ry - 30 * av.y),
-      z: I * (-400 * 2 * sgn * rz - 30 * av.z),
-    }, true);
+    body.addForceAtPoint({ x: fx, y: fy, z: fz }, { x: ax, y: ay, z: az }, true);
+    // light angular damping so the block does not spin wildly around the grab point
+    const I = m * (b.L * b.L + b.w * b.w) / 12;
+    body.addTorque({ x: -I * 8 * av.x, y: -I * 8 * av.y, z: -I * 8 * av.z }, true);
   }
 
   checkRemoval() {
-    const p = this.pull;
-    if (!p) return;
-    const b = p.block;
-    const a = b.axis;
-    const d = Math.abs(b.body.translation()[a] - b.origin[a]);
+    // Also covers a block that was let go while still moving and coasts clear of the tower on its own.
+    const b = this.pull?.block || this.turnBlock;
+    if (!b || b.removed || (this.state !== 'pulling' && this.state !== 'idle')) return;
+    const t = b.body.translation();
+    // out of the tower in any direction (sideways, or lifted clear)
+    const d = Math.hypot(t.x - b.origin.x, t.y - b.origin.y, t.z - b.origin.z);
     if (d >= b.L * REMOVE_FRACTION) this.removeBlock(b);
   }
 
   removeBlock(b) {
-    const dir = Math.sign(b.body.translation()[b.axis] - b.origin[b.axis]) || 1;
     const t = b.body.translation();
+    // fly off in the direction the block was dragged
+    let dx = t.x - b.origin.x, dz = t.z - b.origin.z;
+    const dl = Math.hypot(dx, dz);
+    if (dl > 1e-3) { dx /= dl; dz /= dl; } else { dx = b.axis === 'x' ? 1 : 0; dz = b.axis === 'x' ? 0 : 1; }
+    const dir = { x: dx, z: dz };
     this.world.removeRigidBody(b.body);
     b.removed = true;
     b.edges.material.opacity = 0.65;
@@ -390,14 +393,15 @@ export class Game {
       }
       const m = f.block.mesh;
       const e = 1 - (1 - k) * (1 - k);
-      m.position[f.block.axis] = f.p0[f.block.axis] + f.dir * 3 * e;
+      m.position.x = f.p0.x + f.dir.x * 3 * e;
+      m.position.z = f.p0.z + f.dir.z * 3 * e;
       m.position.y = f.p0.y + 1.2 * e;
       m.scale.setScalar(1 - k * k);
     }
   }
 
   toppleCheck() {
-    const held = this.pull?.block;
+    const held = this.pull?.block || this.turnBlock; // the block being worked on this turn may go anywhere
     for (const b of this.blocks) {
       if (b.removed || b === held) continue;
       const t = b.body.translation(), q = b.body.rotation();
@@ -543,28 +547,23 @@ export class Game {
     }
     const why = this.isPullable(b);
     if (why) { this.cb.onHint?.(why); p.hit = null; return; }
-    // screen-space direction of the pull axis
-    const a = b.axis;
-    const p0 = p.hit.point.clone();
-    const p1 = p0.clone();
-    p1[a] += 1;
-    const s0 = this.toScreen(p0), s1 = this.toScreen(p1);
-    let vx = s1.x - s0.x, vy = s1.y - s0.y;
-    let len = Math.hypot(vx, vy);
-    if (len < 35) { // looking along the axis: fall back to a slow, steady mapping
-      if (len < 1e-3) { vx = 1; vy = 0; len = 1; }
-      vx = (vx / len) * 35; vy = (vy / len) * 35; len = 35;
-    }
-    const start = b.body.translation()[a];
-    this.pull = { block: b, mx: p.x, my: p.y, vx, vy, vv: len * len, start, target: start };
+    // Free drag. The cursor moves the grabbed point within a plane through that point: the horizontal plane
+    // when we look down at the tower enough for that to be well-defined (blocks slide in any direction),
+    // otherwise a vertical plane facing the camera. Holding Shift always uses the camera-facing plane (lift).
+    const hit = p.hit.point.clone();
+    const q = b.body.rotation(), tp = b.body.translation();
+    const local = hit.clone().sub(this._v1.set(tp.x, tp.y, tp.z))
+      .applyQuaternion(this._q1.set(q.x, q.y, q.z, q.w).invert());
+    // Use the ray through the grab point (not the camera centre) to judge how steeply we look at the plane.
+    const view = hit.clone().sub(this.camera.position).normalize();
+    const normal = !e.shiftKey && Math.abs(view.y) > 0.1
+      ? new THREE.Vector3(0, 1, 0)
+      : new THREE.Vector3(view.x, e.shiftKey ? view.y : 0, view.z).normalize();
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, hit);
+    this.pull = { block: b, local, plane, anchor0: hit, target: hit.clone() };
     this.lastPulled = b;
     this.turnBlock = b;
     this.state = 'pulling';
-    // Hard axis/rotation locks make Rapier treat the block as infinitely "heavy" in friction, which drags the
-    // whole layer above along. So we keep it dynamic and steer it with soft springs instead (see applyPull).
-    const q = b.body.rotation(), tp = b.body.translation();
-    this.pull.q0 = { x: q.x, y: q.y, z: q.z, w: q.w };
-    this.pull.perp0 = a === 'x' ? tp.z : tp.x;
     b.body.wakeUp();
     this.controls.enabled = false;
     this.renderer.domElement.style.cursor = 'grabbing';
@@ -582,9 +581,15 @@ export class Game {
   updatePullTarget(e) {
     const p = this.pull;
     if (!p) return;
-    const s = ((e.clientX - p.mx) * p.vx + (e.clientY - p.my) * p.vy) / p.vv;
-    const lim = p.block.L * 1.6;
-    p.target = p.start + Math.max(-lim, Math.min(lim, s));
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.ndc.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+    this.raycaster.setFromCamera(this.ndc, this.camera);
+    const pt = this.raycaster.ray.intersectPlane(p.plane, this._v2);
+    if (!pt) return; // cursor ray misses the drag plane (e.g. above the horizon): keep the last target
+    // keep the target within reach so a stray cursor cannot fling the block
+    const d = pt.sub(p.anchor0), lim = p.block.L * 1.6, len = d.length();
+    if (len > lim) d.multiplyScalar(lim / len);
+    p.target.copy(p.anchor0).add(d);
   }
 
   releasePull(silent) {

@@ -201,12 +201,12 @@ function resetRound() {
   }
   $('blocks-left').textContent = S.game.blocks.length;
   renderPlayers();
-  $('hintbar').textContent = `${S.players[0]}: drag a block along its length to pull it out. Drag empty space to orbit, wheel to zoom.`;
+  $('hintbar').textContent = `${S.players[0]}: drag a block in any direction to work it out (hold Shift to lift). Drag empty space to orbit, wheel to zoom.`;
   console.info('[jenga] tower settled', S.game.settleReport, `layers=${S.layout.layers.length} mode=${S.layout.mode}`);
 }
 
 function onPullState(on) {
-  $('hintbar').textContent = on ? 'Pull it all the way out. Let go to stop.' : $('hintbar').textContent;
+  $('hintbar').textContent = on ? 'Work it clear of the tower. Let go to stop.' : $('hintbar').textContent;
 }
 function onRemoved(b) {
   S.removed.push({ b, by: S.current });
