@@ -9,7 +9,10 @@ const GRAVITY = -18;
 const DT = 1 / 120; // physics step
 const OMEGA = 14; // pull spring natural frequency (rad/s)
 const ZETA = 0.9;
-const FMAX_ACC = 700; // max pull force per unit block mass
+const PULL_SELF = 3; // max pull force = |g| * (PULL_SELF * own mass + PULL_LOAD * mass of the layers above)
+const PULL_LOAD = 1.5;
+const HELD_VMAX = 7, HELD_WMAX = 6; // speed limits for the block in hand (units/s, rad/s)
+const BODY_VMAX = 30, BODY_WMAX = 25; // and for everything else
 const REMOVE_FRACTION = 0.9; // block counts as taken once this fraction of its length is out
 const STILL_TIME = 1.0; // seconds of calm before the turn passes
 const SETTLE_CAP = 8; // hard cap (s) for the settling phase
@@ -304,6 +307,7 @@ export class Game {
       while (this.acc >= DT && steps < 6) {
         this.applyPull();
         this.world.step();
+        this.limitSpeeds();
         this.acc -= DT;
         steps++;
       }
@@ -315,6 +319,23 @@ export class Game {
     this.updateFading(dt);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  // Safety net against "explosions": the held block may not be rammed around faster than a hand would move
+  // it, and nothing may leave a contact faster than a hard fall would make it (deep-penetration kickback).
+  limitSpeeds() {
+    const held = this.pull?.block;
+    for (const b of this.blocks) {
+      if (b.removed || b.body.isSleeping()) continue;
+      const vmax = b === held ? HELD_VMAX : BODY_VMAX;
+      const v = b.body.linvel();
+      const s = Math.hypot(v.x, v.y, v.z);
+      if (s > vmax) { const k = vmax / s; b.body.setLinvel({ x: v.x * k, y: v.y * k, z: v.z * k }, true); }
+      const w = b.body.angvel();
+      const ws = Math.hypot(w.x, w.y, w.z);
+      const wmax = b === held ? HELD_WMAX : BODY_WMAX;
+      if (ws > wmax) { const k = wmax / ws; b.body.setAngvel({ x: w.x * k, y: w.y * k, z: w.z * k }, true); }
+    }
   }
 
   applyPull() {
@@ -336,8 +357,11 @@ export class Game {
     let fx = k * (p.target.x - ax) - c * vx;
     let fy = k * (p.target.y - ay) - c * vy;
     let fz = k * (p.target.z - az) - c * vz;
-    const cap = m * FMAX_ACC, f = Math.hypot(fx, fy, fz);
+    const cap = p.fcap, f = Math.hypot(fx, fy, fz);
     if (f > cap) { const s = cap / f; fx *= s; fy *= s; fz *= s; }
+    // Vertically a hand can lift or press with about the block's own weight, never crush the layers below.
+    const vcap = Math.abs(GRAVITY) * m * 2;
+    fy = Math.max(-vcap, Math.min(vcap, fy));
     body.resetForces(true);
     body.resetTorques(true);
     body.addForceAtPoint({ x: fx, y: fy, z: fz }, { x: ax, y: ay, z: az }, true);
@@ -560,7 +584,13 @@ export class Game {
       ? new THREE.Vector3(0, 1, 0)
       : new THREE.Vector3(view.x, e.shiftKey ? view.y : 0, view.z).normalize();
     const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, hit);
-    this.pull = { block: b, local, plane, anchor0: hit, target: hit.clone() };
+    // Pull strength: enough to beat friction from everything resting above (top and bottom faces), not the
+    // old fixed 700 m/s^2 per unit mass, which could ram a block through its neighbours.
+    let load = 0;
+    for (const x of this.blocks) if (!x.removed && x.layer > b.layer) load += x.mass;
+    const fcap = Math.abs(GRAVITY) * (PULL_SELF * b.mass + PULL_LOAD * load);
+    this.pull = { block: b, local, plane, anchor0: hit, target: hit.clone(), fcap };
+    b.body.enableCcd(true);
     this.lastPulled = b;
     this.turnBlock = b;
     this.state = 'pulling';
