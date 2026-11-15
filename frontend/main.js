@@ -192,11 +192,17 @@ function resetRound() {
   $('removed-list').innerHTML = '';
   $('gameover').hidden = true;
   $('info').hidden = true;
-  S.game.loadTower(S.layout, 0);
+  let rep = S.game.loadTower(S.layout, 0);
+  if (!rep.stable && S.layout.mode === 'depth' && !S.layout.merged) {
+    console.warn('[jenga] tower did not settle cleanly, merging singleton levels', rep);
+    S.layout = buildLayout(S.items, { mergeSingletons: true });
+    S.layout.merged = true;
+    rep = S.game.loadTower(S.layout, 0);
+  }
   $('blocks-left').textContent = S.game.blocks.length;
   renderPlayers();
   $('hintbar').textContent = `${S.players[0]}: drag a block along its length to pull it out. Drag empty space to orbit, wheel to zoom.`;
-  console.info('[jenga] tower settled', S.game.settleReport, `layers=${S.layout.layers.length}`);
+  console.info('[jenga] tower settled', S.game.settleReport, `layers=${S.layout.layers.length} mode=${S.layout.mode}`);
 }
 
 function onPullState(on) {
@@ -217,7 +223,17 @@ function onTurnEnd() {
   renderPlayers();
   $('hintbar').textContent = `${S.players[S.current]}'s turn. Pick a block you think is safe.`;
 }
-function onGameOver({ fallen, culprit }) {
+function onGameOver({ fallen, culprit, draw }) {
+  if (draw) {
+    $('over-card').classList.add('draw');
+    $('over-crash').textContent = 'DRAW';
+    $('over-title').innerHTML = 'Nobody broke it &mdash; this repo is too well-behaved.';
+    $('over-detail').innerHTML = 'No block can be pulled any more, so the tower stands. Stability is a dependency too.';
+    setTimeout(() => { if (S.game.state === 'over') $('gameover').hidden = false; }, 900);
+    return;
+  }
+  $('over-card').classList.remove('draw');
+  $('over-crash').textContent = 'CRASH';
   const loser = S.players[S.current];
   const c = culprit.dep;
   $('over-title').innerHTML = `<b style="color:${PLAYER_COLORS[S.current]}">${esc(loser)}</b> pulled <code>${esc(c.name)}</code> and broke the internet.`;
@@ -247,6 +263,17 @@ function onHover(b, x, y) {
   tip.style.top = y + 16 + 'px';
 }
 
+function depLists(d) {
+  const items = S.items || [];
+  const ids = new Set(items.map((it) => it.dep.id));
+  const needs = (d.depends_on || []).filter((x) => ids.has(x));
+  const users = items.filter((it) => (it.dep.depends_on || []).includes(d.id));
+  const nm = (id) => esc(items.find((it) => it.dep.id === id)?.dep.name ?? id);
+  const list = (label, arr) => (arr.length
+    ? `<div class="desc"><b>${label}</b> ${arr.slice(0, 12).join(', ')}${arr.length > 12 ? ` +${arr.length - 12} more` : ''}</div>` : '');
+  return list('Rests on:', needs.map(nm)) + list('Carries:', users.map((it) => esc(it.dep.name)));
+}
+
 function renderInfo(b) {
   const el = $('info');
   if (!b) { el.hidden = true; return; }
@@ -266,7 +293,8 @@ function renderInfo(b) {
     <h3>${esc(d.name)}</h3><div class="ver">${esc(d.version || '')}</div>
     <div class="chips"><span class="chip" style="background:${b.color}">${esc(KIND_LABELS[d.kind] || d.kind)}</span>
       <span class="chip">${esc(d.ecosystem || '?')}</span><span class="chip">${d.direct ? 'direct' : 'transitive'}</span>
-      <span class="chip">layer ${b.layer + 1}</span></div>
+      <span class="chip">layer ${b.layer + 1}</span>${b.level != null ? `<span class="chip">depth ${b.level}</span>` : ''}</div>
+    ${depLists(d)}
     ${d.description ? `<div class="desc">${esc(d.description)}</div>` : ''}
     <div class="sec">Metrics</div>
     <table>

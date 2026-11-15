@@ -4,7 +4,11 @@ export const TOWER_WIDTH = 3.6; // also the length of every block
 export const BLOCK_GAP = 0.03; // gap between blocks inside a layer
 export const LAYER_GAP = 0.003; // vertical gap between layers
 export const HEIGHT_RANGE = [0.5, 0.8]; // layer height range (driven by avg width-t of the layer)
-export const MAX_PER_LAYER = 5;
+export const MAX_PER_LAYER = 5; // uniform-column fallback only
+export const S_MIN = 2.4; // narrowest tier footprint (waist)
+export const S_MAX = 7; // widest tier footprint
+export const OVERHANG_MAX = 1.5; // a layer's block length may be at most this x the across-span of the layer below
+export const MAX_PER_ROW = 7; // blocks per physical layer in a wide tier
 
 const KIND_RANK = {
   language: 0, runtime: 1, system: 2, package_manager: 3, build_tool: 4, container: 5, ci: 6, package: 7,
@@ -36,51 +40,130 @@ export function orderDependencies(items) {
 }
 
 /**
- * items: [{dep, phys}] already ordered bottom->top. phys.width.value drives block width.
- * Returns {width, layers:[{index, axis, height, y, blocks:[{dep, phys, w, c}]}], totalHeight}
- *   axis 'x' => block length runs along X, blocks are arranged along Z (c = z centre)
- *   axis 'z' => block length runs along Z, blocks are arranged along X (c = x centre)
+ * Longest-path layering on `depends_on` restricted to the selected items.
+ * Returns {levelOf: Map(id -> level), count} (level 0 = depends on nothing in the set),
+ * or null when no item has an in-set edge (=> caller falls back to the uniform column).
+ * Edges to ids outside the set are ignored; cycles are broken by ignoring back-edges.
  */
-export function buildLayout(items, W = TOWER_WIDTH) {
-  const rows = [];
-  let i = 0;
-  const usable = (k) => W - BLOCK_GAP * (k - 1);
-  while (i < items.length) {
-    const row = [items[i]];
-    let sum = items[i].phys.width.value;
-    i++;
-    while (i < items.length && row.length < MAX_PER_LAYER) {
-      const next = items[i].phys.width.value;
-      const newSum = sum + next;
-      const uNew = usable(row.length + 1);
-      const include = newSum <= uNew * 1.12 || Math.abs(newSum - uNew) < Math.abs(sum - usable(row.length));
-      if (!include) break;
-      row.push(items[i]);
-      sum = newSum;
-      i++;
+export function assignLevels(items) {
+  const ids = new Set(items.map((it) => it.dep.id));
+  const deps = new Map(items.map((it) => [it.dep.id, (Array.isArray(it.dep.depends_on) ? it.dep.depends_on : []).filter((x) => ids.has(x) && x !== it.dep.id)]));
+  if (![...deps.values()].some((a) => a.length)) return null;
+  const level = new Map();
+  const state = new Map(); // 1 = on stack, 2 = done
+  const visit = (id) => {
+    state.set(id, 1);
+    let lv = 0;
+    for (const d of deps.get(id)) {
+      const st = state.get(d);
+      if (st === 1) continue; // back-edge: ignore
+      if (st !== 2) visit(d);
+      lv = Math.max(lv, level.get(d) + 1);
     }
-    rows.push({ row, sum });
-  }
+    level.set(id, lv);
+    state.set(id, 2);
+  };
+  for (const it of items) if (!state.has(it.dep.id)) visit(it.dep.id);
+  // compress empty levels (cannot happen with longest-path, kept for safety)
+  const used = [...new Set(level.values())].sort((a, b) => a - b);
+  const remap = new Map(used.map((v, i) => [v, i]));
+  for (const [k, v] of level) level.set(k, remap.get(v));
+  return { levelOf: level, count: used.length };
+}
 
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+/** Greedy row packer: take blocks from items[i..] that fit a span of U. Returns the row and its widths. */
+function packRow(items, i, U, maxPer) {
+  const usable = (k) => U - BLOCK_GAP * (k - 1);
+  const row = [items[i]];
+  let sum = items[i].phys.width.value;
+  let j = i + 1;
+  while (j < items.length && row.length < maxPer) {
+    const newSum = sum + items[j].phys.width.value;
+    const uNew = usable(row.length + 1);
+    if (!(newSum <= uNew * 1.12 || Math.abs(newSum - uNew) < Math.abs(sum - usable(row.length)))) break;
+    row.push(items[j]);
+    sum = newSum;
+    j++;
+  }
+  const k = row.length;
+  const sFull = usable(k) / sum;
+  const sMin = (Math.min(U, S_MIN) - BLOCK_GAP * (k - 1)) / sum; // never thinner than the waist
+  const s = Math.min(sFull, Math.max(Math.min(sFull, 1.5), sMin)); // sparse rows stay partial (centred)
+  const widths = row.map((it) => it.phys.width.value * s);
+  const span = widths.reduce((a, b) => a + b, 0) + BLOCK_GAP * (k - 1);
+  return { row, widths, span, next: j };
+}
+
+function finishLayer(layers, y, axis, length, span, level, row, widths) {
+  const k = row.length;
+  let cursor = -span / 2;
+  const avgT = row.reduce((a, it) => a + it.phys.width.t, 0) / k;
+  const height = HEIGHT_RANGE[0] + (HEIGHT_RANGE[1] - HEIGHT_RANGE[0]) * avgT;
+  const blocks = row.map((it, bi) => {
+    const w = widths[bi];
+    const c = cursor + w / 2;
+    cursor += w + BLOCK_GAP;
+    return { dep: it.dep, phys: it.phys, w, c, length };
+  });
+  layers.push({ index: layers.length, axis, height, y: y + height / 2, length, span, level, blocks });
+  return y + height + LAYER_GAP;
+}
+
+/** Old layout: every block TOWER_WIDTH long, layers packed by kind order (used when there is no dependency graph). */
+function uniformLayout(items, W = TOWER_WIDTH) {
   const layers = [];
   let y = LAYER_GAP;
-  rows.forEach(({ row, sum }, li) => {
-    const k = row.length;
-    let s = usable(k) / sum;
-    s = Math.min(s, 1.5); // a sparse final layer is allowed to stay partial (centred)
-    const widths = row.map((it) => it.phys.width.value * s);
-    const total = widths.reduce((a, b) => a + b, 0) + BLOCK_GAP * (k - 1);
-    let cursor = -total / 2;
-    const avgT = row.reduce((a, it) => a + it.phys.width.t, 0) / k;
-    const height = HEIGHT_RANGE[0] + (HEIGHT_RANGE[1] - HEIGHT_RANGE[0]) * avgT;
-    const blocks = row.map((it, bi) => {
-      const w = widths[bi];
-      const c = cursor + w / 2;
-      cursor += w + BLOCK_GAP;
-      return { dep: it.dep, phys: it.phys, w, c };
-    });
-    layers.push({ index: li, axis: li % 2 === 0 ? 'x' : 'z', height, y: y + height / 2, blocks });
-    y += height + LAYER_GAP;
-  });
-  return { width: W, layers, totalHeight: y };
+  let i = 0;
+  while (i < items.length) {
+    const r = packRow(items, i, W, MAX_PER_LAYER);
+    y = finishLayer(layers, y, layers.length % 2 === 0 ? 'x' : 'z', W, r.span, null, r.row, r.widths);
+    i = r.next;
+  }
+  return { width: W, layers, totalHeight: y, mode: 'uniform', levelCount: 0 };
+}
+
+/**
+ * items: [{dep, phys}] already ordered bottom->top. phys.width.value drives block width.
+ * opts.mergeSingletons: fold single-block levels into the level below (stability fallback).
+ * Returns {width (max block length), mode, levelCount, totalHeight,
+ *          layers:[{index, axis, height, y, length, span, level, blocks:[{dep, phys, w, c, length}]}]}
+ *   axis 'x' => block length runs along X, blocks are arranged along Z (c = z centre)
+ *   axis 'z' => block length runs along Z, blocks are arranged along X (c = x centre)
+ * Depth mode: one tier per dependency level (level 0 at the bottom), tier side S = clamp(sqrt(sumWidths*TOWER_WIDTH)).
+ * Consecutive physical layers satisfy: span(upper) <= length(lower) and length(upper) <= OVERHANG_MAX * span(lower).
+ */
+export function buildLayout(items, opts = {}) {
+  const lv = assignLevels(items);
+  if (!lv) return uniformLayout(items);
+  let tiers = [];
+  for (let l = 0; l < lv.count; l++) tiers.push({ level: l, items: items.filter((it) => lv.levelOf.get(it.dep.id) === l) });
+  if (opts.mergeSingletons) {
+    const merged = [];
+    for (const t of tiers) {
+      if (merged.length && t.items.length === 1) merged[merged.length - 1].items.push(...t.items);
+      else merged.push(t);
+    }
+    tiers = merged;
+  }
+  const layers = [];
+  let y = LAYER_GAP;
+  let prev = null; // {L, A} of the layer below
+  let maxL = S_MIN;
+  for (const t of tiers) {
+    const sum = t.items.reduce((a, it) => a + it.phys.width.value, 0);
+    const S = clamp(Math.sqrt(sum * TOWER_WIDTH), S_MIN, S_MAX);
+    let i = 0;
+    while (i < t.items.length) {
+      const L = prev ? Math.min(S, OVERHANG_MAX * prev.A) : S;
+      const U = prev ? Math.min(S, prev.L) : S;
+      const r = packRow(t.items, i, U, MAX_PER_ROW);
+      y = finishLayer(layers, y, layers.length % 2 === 0 ? 'x' : 'z', L, r.span, t.level, r.row, r.widths);
+      prev = { L, A: r.span };
+      maxL = Math.max(maxL, L);
+      i = r.next;
+    }
+  }
+  return { width: maxL, layers, totalHeight: y, mode: 'depth', levelCount: tiers.length };
 }

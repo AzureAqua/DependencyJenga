@@ -258,3 +258,61 @@ def scan_system(rf, metas: dict, st) -> list[Dep]:
         add(make_tool("musl" if alpine else "glibc", direct=False, uses=None))
         add(make_tool("linux", direct=False, uses=None))
     return deps
+
+
+# ---------------------------------------------------------------------------------------------
+# Synthetic edges so non-package deps have a shape.  Applied by the analyzer on the final list.
+RUNTIME_OF = {"npm": "node", "pypi": "cpython", "cargo": "rustc", "go": "go", "rubygems": "cruby",
+              "maven": "jvm", "packagist": "php-runtime"}
+# tool key -> tool key it depends on (language / package manager / build tool -> runtime)
+TOOL_RUNTIME = {
+    "javascript": "node", "typescript": "node", "npm": "node", "yarn": "node", "pnpm": "node",
+    "python": "cpython", "pip": "cpython", "poetry": "cpython", "uv": "cpython", "pipenv": "cpython",
+    "rust": "rustc", "cargo": "rustc", "gomod": "go",
+    "ruby": "cruby", "bundler": "cruby", "java": "jvm", "maven": "jvm", "gradle": "jvm",
+    "php": "php-runtime", "composer": "php-runtime",
+    "node": "v8", "rustc": "llvm",
+}
+# runtime tool key -> docker image names that can serve as its base image
+RUNTIME_IMAGES = {
+    "node": ("node",), "cpython": ("python",), "rustc": ("rust",), "go": ("golang",), "cruby": ("ruby",),
+    "php-runtime": ("php",), "jvm": ("openjdk", "eclipse-temurin", "amazoncorretto", "maven", "gradle", "java"),
+}
+LIBC_USERS = ("node", "v8", "cpython", "rustc", "llvm", "jvm", "cruby", "php-runtime", "go", "gcc", "make", "cmake", "bun")
+
+
+def add_synthetic_edges(deps: list) -> None:
+    """Fill ``depends_on`` for non-package deps and for packages without in-list package dependencies.
+
+    Every edge points down the stack (package -> runtime -> libc -> kernel, tool -> runtime,
+    CI action -> git, runtime -> base image), so the result stays acyclic."""
+    tools = {d.extra["tool_key"]: d for d in deps if d.extra.get("tool_key")}
+
+    def link(src, dst):
+        if src is not None and dst is not None and src is not dst and dst.id not in src.depends_on:
+            src.depends_on.append(dst.id)
+
+    libc = tools.get("glibc") or tools.get("musl")
+    link(libc, tools.get("linux"))
+    for key, d in tools.items():
+        if TOOL_RUNTIME.get(key):
+            link(d, tools.get(TOOL_RUNTIME[key]))
+        if key in LIBC_USERS:
+            link(d, libc)
+    # a runtime depends on its Docker base image when one is present
+    containers = [d for d in deps if d.kind == "container"]
+    for key, names in RUNTIME_IMAGES.items():
+        rt = tools.get(key)
+        if rt is None or not containers:
+            continue
+        match = [c for c in containers if c.name.split("/")[-1].lower() in names]
+        if not match:
+            match = [c for c in containers if "compose" not in (c.source_file or "").lower()]
+        if match:
+            link(rt, match[0])
+    git = tools.get("git")
+    for d in deps:
+        if d.kind == "ci":
+            link(d, git)
+        elif d.kind == "package" and not d.depends_on:
+            link(d, tools.get(RUNTIME_OF.get(d.ecosystem, "")))

@@ -48,7 +48,7 @@ def scan_repo(root: str) -> ScanResult:
         metas[key] = meta
         _merge(merged, deps)
         if meta.get("manifests") and not meta.get("lock") and key in ("npm", "pypi", "cargo"):
-            res.warnings.append(f"No {key} lockfile found: only direct dependencies are listed for it.")
+            res.warnings.append(f"No {key} lockfile found: indirect dependencies are resolved via deps.dev where possible.")
     for key, fn in (("rubygems", misc.scan_ruby), ("packagist", misc.scan_php), ("maven", misc.scan_jvm)):
         try:
             deps, meta = fn(rf)

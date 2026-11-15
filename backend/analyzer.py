@@ -8,12 +8,15 @@ import os
 import time
 from urllib.parse import urlparse
 
-from . import metrics, repo
+from . import metrics, repo, transitive
 from .models import Dep
 from .repo import AnalysisError
 from .scanners import scan_repo
+from .scanners.system import add_synthetic_edges
 
 MAX_DEPS = 250
+CACHE_VERSION = 2   # bump to invalidate cached results when the result shape/logic changes
+TRANSITIVE_BUDGET = 15.0
 CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache")
 MEM_TTL = 24 * 3600
 DISK_TTL = 7 * 24 * 3600
@@ -74,6 +77,29 @@ def _sort(deps: list[Dep]) -> list[Dep]:
                                        0 if d.direct else 1, -(d.metrics.get("dependents_in_tree") or 0), d.name))
 
 
+async def _expand(deps: list[Dep]) -> list[str]:
+    ctx = metrics.Ctx(time.monotonic() + TRANSITIVE_BUDGET)
+    try:
+        return await transitive.expand_transitives(ctx, deps)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        return ["Transitive resolution via deps.dev failed; only known dependencies are listed."]
+    finally:
+        await ctx.client.aclose()
+
+
+def link_deps(deps: list[Dep]) -> None:
+    """Set ``depends_on`` from the final (post-cap) list: real package edges first, then synthetic ones."""
+    ids = {d.id for d in deps}
+    for d in deps:
+        d.depends_on = []
+        # lockfile / deps.dev graph; registry 'requires' only when no graph is known for this dep
+        targets = d.edges if d.edges is not None else d.extra.get("requires") or ()
+        d.depends_on = sorted(t for t in targets if t in ids and t != d.id)
+    add_synthetic_edges(deps)
+
+
 async def _run(url: str, key: str) -> dict:
     tmp, root, commit = await repo.clone_repo(url)
     try:
@@ -82,10 +108,12 @@ async def _run(url: str, key: str) -> dict:
         await asyncio.to_thread(repo.cleanup, tmp)
     warnings = list(scan.warnings)
     deps = scan.deps
+    warnings += await _expand(deps)
     metrics.compute_dependents(deps)
     deps = cap_deps(deps, warnings)
     warnings += await metrics.enrich(deps, budget=40.0)
     deps = _sort(deps)
+    link_deps(deps)
     return {
         "repo": {"url": url, "name": repo.repo_name(url), "host": (urlparse(url).hostname or "").lower(),
                  "commit": commit},
@@ -96,7 +124,7 @@ async def _run(url: str, key: str) -> dict:
 
 async def analyze(raw_url: str) -> dict:
     url = repo.validate_url(raw_url)
-    key = repo.cache_key(url)
+    key = f"v{CACHE_VERSION}|{repo.cache_key(url)}"
     cached = _load_cached(key)
     if cached is not None:
         return cached

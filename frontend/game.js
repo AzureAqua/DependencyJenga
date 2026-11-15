@@ -141,14 +141,13 @@ export class Game {
     try { world.integrationParameters.numSolverIterations = 12; } catch (e) { /* older API */ }
     world.createCollider(RAPIER.ColliderDesc.cuboid(40, 0.5, 40).setTranslation(0, -0.5, 0).setFriction(0.9));
 
-    const L = layout.width;
     const lineBase = new THREE.Color(INK);
     for (const layer of layout.layers) {
       const odd = layer.axis === 'z';
       for (let bi = 0; bi < layer.blocks.length; bi++) {
         const it = layer.blocks[bi];
         const ph = it.phys;
-        const H = layer.height, w = it.w;
+        const H = layer.height, w = it.w, L = it.length ?? layer.length ?? layout.width;
         const x = odd ? it.c : 0, z = odd ? 0 : it.c;
         const rot = odd ? { x: 0, y: Math.SQRT1_2, z: 0, w: Math.SQRT1_2 } : { x: 0, y: 0, z: 0, w: 1 };
         const rb = world.createRigidBody(
@@ -179,7 +178,7 @@ export class Game {
         const block = {
           id: it.dep.id, dep: it.dep, phys: ph, layer: layer.index, index: bi,
           body: rb, mesh, edges, matList: [materials[4], materials[0], materials[2]], textures,
-          L, h: H, w, axis: layer.axis, removed: false, bad: 0, locked: false,
+          L, h: H, w, axis: layer.axis, level: layer.level ?? null, removed: false, bad: 0, locked: false,
           mass: rb.mass(), origin: null, color,
         };
         mesh.userData.block = block;
@@ -189,7 +188,7 @@ export class Game {
     }
     // pre-settle the tower off-screen (up to ~6 s of simulated time)
     this.settleLog = [];
-    for (let i = 0; i < 720; i++) {
+    for (let i = 0; i < 1200; i++) {
       // ramp gravity in so the stack loads smoothly instead of ringing like a Newton's cradle
       if (i <= 120) world.gravity = { x: 0, y: GRAVITY * Math.min(1, i / 120), z: 0 };
       world.step();
@@ -206,7 +205,7 @@ export class Game {
       if (i > 240 && i % 30 === 0 && this.blocks.every((b) => b.body.isSleeping())) break;
     }
     this.syncMeshes();
-    let maxDisp = 0, maxSpeed = 0, asleep = 0;
+    let maxDisp = 0, maxSpeed = 0, asleep = 0, minUp = 1;
     for (const b of this.blocks) {
       const t = b.body.translation();
       const li = layout.layers[b.layer];
@@ -215,26 +214,40 @@ export class Game {
       const v = b.body.linvel();
       maxSpeed = Math.max(maxSpeed, Math.hypot(v.x, v.y, v.z));
       if (b.body.isSleeping()) asleep++;
+      const q = b.body.rotation();
+      minUp = Math.min(minUp, 1 - 2 * (q.x * q.x + q.z * q.z));
       b.origin = { x: t.x, y: t.y, z: t.z };
     }
-    this.settleReport = { maxDisp, maxSpeed, asleep, total: this.blocks.length };
+    const stable = asleep === this.blocks.length && maxDisp < 0.7 && minUp > 0.95;
+    this.settleReport = { maxDisp, maxSpeed, asleep, total: this.blocks.length, minUp, stable, layers: this.nLayers, mode: layout.mode };
     this.frameTower();
     this.state = 'idle';
     this.turnBlock = null;
     this.stillTime = 0;
     this.acc = 0;
+    if (!this.hasLegalMove()) this._draw();
+    return this.settleReport;
+  }
+
+  _draw() {
+    this.state = 'over';
+    this.releasePull(true);
+    this.controls.enabled = true;
+    this.cb.onGameOver?.({ draw: true });
   }
 
   frameTower() {
     const H = this.layout.totalHeight;
     const aspect = this.camera.aspect || 1.5;
     const fit = (H * 0.58 + 2.5) / Math.tan((this.camera.fov * Math.PI) / 360); // fit height
-    const dist = Math.max(14, fit, 9 / Math.min(1, aspect) / Math.tan((this.camera.fov * Math.PI) / 360) * 0.6);
+    const dist = Math.max(14, fit, (this.W * 2.5) / Math.min(1, aspect) / Math.tan((this.camera.fov * Math.PI) / 360) * 0.6);
     this.controls.target.set(0, H * 0.45, 0);
     this.camera.position.set(dist * 0.62, H * 0.45 + dist * 0.28, dist * 0.78);
     this.controls.update();
     const sc = this.sun.shadow.camera;
-    sc.top = Math.max(20, H + 6);
+    const R = Math.max(16, this.W * 2.2 + 6);
+    sc.left = -R; sc.right = R; sc.bottom = -R;
+    sc.top = Math.max(20, H + 6, R);
     sc.updateProjectionMatrix();
     this.sun.position.set(9, H + 14, 12);
   }
@@ -255,10 +268,20 @@ export class Game {
     if (this.turnBlock && !this.turnBlock.removed && b !== this.turnBlock) {
       return `You already touched ${this.turnBlock.dep.name} - you have to finish pulling it.`;
     }
+    return this.structuralBlock(b);
+  }
+
+  /** Rules that depend only on the tower structure (not on the touch-move lock). */
+  structuralBlock(b) {
     if (b.layer >= this.nLayers - 1) return "The top layer can't be taken.";
     const remaining = this.layout.layers[b.layer].blocks.filter((x) => !x.block.removed).length;
     if (remaining <= 1) return 'That is the last block of its layer.';
     return null;
+  }
+
+  /** True if any block could still be pulled (ignores the touch-move lock). */
+  hasLegalMove() {
+    return this.blocks.some((b) => !b.removed && !this.structuralBlock(b));
   }
 
   canInteract() {
@@ -331,7 +354,7 @@ export class Game {
     const b = p.block;
     const a = b.axis;
     const d = Math.abs(b.body.translation()[a] - b.origin[a]);
-    if (d >= this.W * REMOVE_FRACTION) this.removeBlock(b);
+    if (d >= b.L * REMOVE_FRACTION) this.removeBlock(b);
   }
 
   removeBlock(b) {
@@ -382,7 +405,7 @@ export class Game {
       const dropped = b.origin.y - t.y > Math.max(0.9, b.h * 1.1);
       const grounded = b.layer >= 1 && t.y < b.h / 2 + 0.12;
       const tilted = upY < 0.57;
-      const strayed = Math.hypot(t.x - b.origin.x, t.z - b.origin.z) > this.W * 1.3;
+      const strayed = Math.hypot(t.x - b.origin.x, t.z - b.origin.z) > b.L * 1.3;
       if (dropped || grounded || tilted || strayed) {
         b.why = { dropped, grounded, tilted, strayed, upY, dy: b.origin.y - t.y };
         if (++b.bad >= 6) { this.lastTopple = { name: b.dep.name, ...b.why }; return b; }
@@ -410,6 +433,7 @@ export class Game {
       if (this.stillTime >= STILL_TIME || this.settleTime > SETTLE_CAP) {
         this.state = 'idle';
         this.turnBlock = null;
+        if (!this.hasLegalMove()) return this._draw();
         this.cb.onTurnEnd?.();
       }
     }
@@ -559,7 +583,7 @@ export class Game {
     const p = this.pull;
     if (!p) return;
     const s = ((e.clientX - p.mx) * p.vx + (e.clientY - p.my) * p.vy) / p.vv;
-    const lim = this.W * 1.6;
+    const lim = p.block.L * 1.6;
     p.target = p.start + Math.max(-lim, Math.min(lim, s));
   }
 

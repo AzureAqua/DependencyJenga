@@ -131,6 +131,7 @@ def _load(rf, f):
 def scan(rf) -> tuple[list[Dep], dict]:
     manifests = rf.named("package.json")
     direct: dict = {}
+    prod_names: set = set()   # direct deps listed in a non-dev section
     local: set = set()
     scripts: list = []
     parsed_manifests = [(f, _load(rf, f)) for f in manifests]
@@ -152,6 +153,8 @@ def scan(rf) -> tuple[list[Dep], dict]:
                 if n in local or (isinstance(spec, str) and spec.startswith(LOCAL_PREFIXES)):
                     continue
                 direct.setdefault(n, (clean_version(spec), f))
+                if sec != "devDependencies":
+                    prod_names.add(n)
 
     locked: dict = {}
     lock_file = None
@@ -186,6 +189,8 @@ def scan(rf) -> tuple[list[Dep], dict]:
                 source_file=mf if is_direct else (lk["file"] if lk else None))
         if lk is not None:
             d.edges = {f"npm:{x}" for x in lk["deps"] if x not in local}
+        if is_direct and name not in prod_names:
+            d.extra["scope"] = "dev"
         d.extra["script_mentions"] = sum(
             1 for s in scripts if re.search(r"(?<![\w@/-])" + re.escape(name) + r"(?![\w-])", s))
         deps.append(d)

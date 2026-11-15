@@ -27,6 +27,8 @@ class Dep:
     description: str | None = None
     # ids of other deps this one depends on; None = unknown (no lock graph)
     edges: set | None = None
+    # final, serialised edges: ids present in the returned list (set by the analyzer after the cap)
+    depends_on: list = field(default_factory=list)
     metrics: dict = field(default_factory=empty_metrics)
     # scratch values used by the metrics stage (not serialised)
     extra: dict = field(default_factory=dict)
@@ -42,6 +44,7 @@ class Dep:
             "ecosystem": self.ecosystem, "version": self.version,
             "direct": self.direct, "source_file": self.source_file,
             "repo_url": self.repo_url, "description": self.description,
+            "depends_on": list(self.depends_on),
             "metrics": m,
         }
 

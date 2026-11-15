@@ -145,3 +145,4 @@ details > summary { cursor: pointer; margin: 4px 0; }
   .player input { width: 80px; }
   .hint-bar { display: none; }
 }
+.over-card.draw .crash { color: var(--ink); transform: rotate(2deg); }

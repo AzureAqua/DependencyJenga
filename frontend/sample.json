@@ -29,7 +29,10 @@
     "age_days": 11000,
     "first_release": "1994-12-04",
     "last_release": "2024-06-06"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "system:node",
@@ -54,7 +57,36 @@
     "age_days": 5400,
     "first_release": "2010-04-04",
     "last_release": "2024-09-26"
-   }
+   },
+   "depends_on": [
+    "system:libc (glibc)"
+   ]
+  },
+  {
+   "id": "system:linux",
+   "name": "linux kernel",
+   "kind": "system",
+   "ecosystem": "system",
+   "version": "6.1",
+   "direct": false,
+   "source_file": null,
+   "repo_url": "https://github.com/torvalds/linux",
+   "description": "The kernel under everything else.",
+   "metrics": {
+    "size_bytes": null,
+    "import_count": null,
+    "dependents_in_tree": 46,
+    "global_dependents": null,
+    "recent_commits": null,
+    "recent_commits_source": null,
+    "open_issues": null,
+    "open_prs": null,
+    "stars": null,
+    "age_days": 12000,
+    "first_release": "1991-09-17",
+    "last_release": "2024-09-20"
+   },
+   "depends_on": []
   },
   {
    "id": "system:libc (glibc)",
@@ -79,7 +111,10 @@
     "age_days": 12000,
     "first_release": "1992-03-09",
     "last_release": "2024-05-17"
-   }
+   },
+   "depends_on": [
+    "system:linux"
+   ]
   },
   {
    "id": "system:openssl",
@@ -104,7 +139,38 @@
     "age_days": 9000,
     "first_release": "2000-05-26",
     "last_release": "2024-07-16"
-   }
+   },
+   "depends_on": [
+    "system:libc (glibc)"
+   ]
+  },
+  {
+   "id": "system:git",
+   "name": "git",
+   "kind": "system",
+   "ecosystem": "system",
+   "version": "2.39",
+   "direct": false,
+   "source_file": null,
+   "repo_url": "https://github.com/git/git",
+   "description": "Where the CI actions fetch the code from.",
+   "metrics": {
+    "size_bytes": null,
+    "import_count": null,
+    "dependents_in_tree": 3,
+    "global_dependents": null,
+    "recent_commits": null,
+    "recent_commits_source": null,
+    "open_issues": null,
+    "open_prs": null,
+    "stars": null,
+    "age_days": 7000,
+    "first_release": "2005-04-07",
+    "last_release": "2024-08-12"
+   },
+   "depends_on": [
+    "system:libc (glibc)"
+   ]
   },
   {
    "id": "npm:npm",
@@ -129,7 +195,10 @@
     "age_days": 5200,
     "first_release": "2010-10-21",
     "last_release": "2024-09-30"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:vite",
@@ -154,7 +223,12 @@
     "age_days": 1500,
     "first_release": "2020-12-07",
     "last_release": "2024-12-13"
-   }
+   },
+   "depends_on": [
+    "npm:esbuild",
+    "npm:picocolors",
+    "system:node"
+   ]
   },
   {
    "id": "npm:esbuild",
@@ -179,7 +253,10 @@
     "age_days": 1700,
     "first_release": "2020-05-21",
     "last_release": "2024-12-09"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "docker:node:20-alpine",
@@ -204,7 +281,11 @@
     "age_days": null,
     "first_release": null,
     "last_release": null
-   }
+   },
+   "depends_on": [
+    "system:libc (glibc)",
+    "system:node"
+   ]
   },
   {
    "id": "github-actions:actions/checkout",
@@ -229,7 +310,10 @@
     "age_days": 1900,
     "first_release": "2019-11-03",
     "last_release": "2024-12-05"
-   }
+   },
+   "depends_on": [
+    "system:git"
+   ]
   },
   {
    "id": "github-actions:actions/setup-node",
@@ -254,7 +338,11 @@
     "age_days": 1800,
     "first_release": "2020-02-11",
     "last_release": "2024-12-07"
-   }
+   },
+   "depends_on": [
+    "github-actions:actions/checkout",
+    "system:node"
+   ]
   },
   {
    "id": "npm:react",
@@ -279,7 +367,10 @@
     "age_days": 4200,
     "first_release": "2013-07-17",
     "last_release": "2024-10-20"
-   }
+   },
+   "depends_on": [
+    "npm:loose-envify"
+   ]
   },
   {
    "id": "npm:react-dom",
@@ -304,7 +395,11 @@
     "age_days": 4200,
     "first_release": "2013-07-17",
     "last_release": "2024-10-20"
-   }
+   },
+   "depends_on": [
+    "npm:react",
+    "npm:scheduler"
+   ]
   },
   {
    "id": "npm:scheduler",
@@ -329,7 +424,10 @@
     "age_days": 3000,
     "first_release": "2016-10-29",
     "last_release": "2024-11-13"
-   }
+   },
+   "depends_on": [
+    "npm:loose-envify"
+   ]
   },
   {
    "id": "npm:loose-envify",
@@ -354,7 +452,10 @@
     "age_days": 3800,
     "first_release": "2014-08-21",
     "last_release": "2024-10-28"
-   }
+   },
+   "depends_on": [
+    "npm:js-tokens"
+   ]
   },
   {
    "id": "npm:js-tokens",
@@ -379,7 +480,10 @@
     "age_days": 3500,
     "first_release": "2015-06-17",
     "last_release": "2024-11-03"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:react-router",
@@ -404,7 +508,10 @@
     "age_days": 3600,
     "first_release": "2015-03-09",
     "last_release": "2024-11-01"
-   }
+   },
+   "depends_on": [
+    "npm:react"
+   ]
   },
   {
    "id": "npm:zustand",
@@ -429,7 +536,10 @@
     "age_days": 1600,
     "first_release": "2020-08-29",
     "last_release": "2024-12-11"
-   }
+   },
+   "depends_on": [
+    "npm:react"
+   ]
   },
   {
    "id": "npm:lodash",
@@ -454,7 +564,10 @@
     "age_days": 4600,
     "first_release": "2012-06-12",
     "last_release": "2024-10-12"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:express",
@@ -479,7 +592,13 @@
     "age_days": 5000,
     "first_release": "2011-05-09",
     "last_release": "2024-10-04"
-   }
+   },
+   "depends_on": [
+    "npm:body-parser",
+    "npm:debug",
+    "npm:qs",
+    "npm:mime-types"
+   ]
   },
   {
    "id": "npm:body-parser",
@@ -504,7 +623,11 @@
     "age_days": 4400,
     "first_release": "2012-12-29",
     "last_release": "2024-10-16"
-   }
+   },
+   "depends_on": [
+    "npm:qs",
+    "npm:debug"
+   ]
   },
   {
    "id": "npm:qs",
@@ -529,7 +652,10 @@
     "age_days": 4800,
     "first_release": "2011-11-25",
     "last_release": "2024-10-08"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:debug",
@@ -554,7 +680,10 @@
     "age_days": 4400,
     "first_release": "2012-12-29",
     "last_release": "2024-10-16"
-   }
+   },
+   "depends_on": [
+    "npm:ms"
+   ]
   },
   {
    "id": "npm:ms",
@@ -579,7 +708,10 @@
     "age_days": 3300,
     "first_release": "2016-01-03",
     "last_release": "2024-11-07"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:axios",
@@ -604,7 +736,11 @@
     "age_days": 3900,
     "first_release": "2014-05-13",
     "last_release": "2024-10-26"
-   }
+   },
+   "depends_on": [
+    "npm:follow-redirects",
+    "npm:form-data"
+   ]
   },
   {
    "id": "npm:follow-redirects",
@@ -629,7 +765,10 @@
     "age_days": 3700,
     "first_release": "2014-11-29",
     "last_release": "2024-10-30"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:form-data",
@@ -654,7 +793,12 @@
     "age_days": 3700,
     "first_release": "2014-11-29",
     "last_release": "2024-10-30"
-   }
+   },
+   "depends_on": [
+    "npm:asynckit",
+    "npm:combined-stream",
+    "npm:mime-types"
+   ]
   },
   {
    "id": "npm:asynckit",
@@ -679,7 +823,10 @@
     "age_days": 3600,
     "first_release": "2015-03-09",
     "last_release": "2024-11-01"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:combined-stream",
@@ -704,7 +851,10 @@
     "age_days": 3500,
     "first_release": "2015-06-17",
     "last_release": "2024-11-03"
-   }
+   },
+   "depends_on": [
+    "npm:delayed-stream"
+   ]
   },
   {
    "id": "npm:delayed-stream",
@@ -729,7 +879,10 @@
     "age_days": 4000,
     "first_release": "2014-02-02",
     "last_release": "2024-10-24"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:mime-types",
@@ -754,7 +907,10 @@
     "age_days": 3800,
     "first_release": "2014-08-21",
     "last_release": "2024-10-28"
-   }
+   },
+   "depends_on": [
+    "npm:mime-db"
+   ]
   },
   {
    "id": "npm:mime-db",
@@ -779,7 +935,10 @@
     "age_days": 3600,
     "first_release": "2015-03-09",
     "last_release": "2024-11-01"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:chalk",
@@ -804,7 +963,10 @@
     "age_days": 4600,
     "first_release": "2012-06-12",
     "last_release": "2024-10-12"
-   }
+   },
+   "depends_on": [
+    "npm:ansi-styles"
+   ]
   },
   {
    "id": "npm:ansi-styles",
@@ -829,7 +991,10 @@
     "age_days": 3600,
     "first_release": "2015-03-09",
     "last_release": "2024-11-01"
-   }
+   },
+   "depends_on": [
+    "npm:color-convert"
+   ]
   },
   {
    "id": "npm:color-convert",
@@ -854,7 +1019,10 @@
     "age_days": 3200,
     "first_release": "2016-04-12",
     "last_release": "2024-11-09"
-   }
+   },
+   "depends_on": [
+    "npm:color-name"
+   ]
   },
   {
    "id": "npm:color-name",
@@ -879,7 +1047,10 @@
     "age_days": 3900,
     "first_release": "2014-05-13",
     "last_release": "2024-10-26"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:semver",
@@ -904,7 +1075,10 @@
     "age_days": 4300,
     "first_release": "2013-04-08",
     "last_release": "2024-10-18"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:uuid",
@@ -929,7 +1103,10 @@
     "age_days": 4900,
     "first_release": "2011-08-17",
     "last_release": "2024-10-06"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:zod",
@@ -954,7 +1131,10 @@
     "age_days": 1800,
     "first_release": "2020-02-11",
     "last_release": "2024-12-07"
-   }
+   },
+   "depends_on": [
+    "npm:tslib"
+   ]
   },
   {
    "id": "npm:tslib",
@@ -979,7 +1159,10 @@
     "age_days": 3300,
     "first_release": "2016-01-03",
     "last_release": "2024-11-07"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:nanoid",
@@ -1004,7 +1187,10 @@
     "age_days": 3500,
     "first_release": "2015-06-17",
     "last_release": "2024-11-03"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:picocolors",
@@ -1029,7 +1215,10 @@
     "age_days": 2000,
     "first_release": "2019-07-26",
     "last_release": "2024-12-03"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:is-odd",
@@ -1054,7 +1243,10 @@
     "age_days": 3200,
     "first_release": "2016-04-12",
     "last_release": "2024-11-09"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:left-pad",
@@ -1079,7 +1271,10 @@
     "age_days": 3500,
     "first_release": "2015-06-17",
     "last_release": "2024-11-03"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:tiny-nebraska-lib",
@@ -1104,7 +1299,10 @@
     "age_days": 7400,
     "first_release": "2004-10-12",
     "last_release": "2024-08-17"
-   }
+   },
+   "depends_on": [
+    "system:node"
+   ]
   },
   {
    "id": "npm:vitest",
@@ -1129,7 +1327,12 @@
     "age_days": 900,
     "first_release": "2022-07-30",
     "last_release": "2024-12-25"
-   }
+   },
+   "depends_on": [
+    "npm:vite",
+    "npm:chalk",
+    "npm:debug"
+   ]
   },
   {
    "id": "npm:eslint",
@@ -1154,7 +1357,12 @@
     "age_days": 4000,
     "first_release": "2014-02-02",
     "last_release": "2024-10-24"
-   }
+   },
+   "depends_on": [
+    "npm:chalk",
+    "npm:semver",
+    "npm:debug"
+   ]
   },
   {
    "id": "npm:openapi-typescript-codegen",
@@ -1179,7 +1387,12 @@
     "age_days": 1300,
     "first_release": "2021-06-25",
     "last_release": "2024-12-17"
-   }
+   },
+   "depends_on": [
+    "npm:axios",
+    "npm:eslint",
+    "npm:semver"
+   ]
   }
  ],
  "warnings": [
