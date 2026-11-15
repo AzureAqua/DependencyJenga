@@ -6,7 +6,11 @@ export const LAYER_GAP = 0.003; // vertical gap between layers
 export const HEIGHT_RANGE = [0.5, 0.8]; // layer height range (driven by avg width-t of the layer)
 export const MAX_PER_LAYER = 5; // uniform-column fallback only
 export const S_MIN = 2.4; // narrowest tier footprint (waist)
-export const S_MAX = 7; // widest tier footprint
+export const S_MAX = 7; // widest tier footprint for a small tower; grows with the tower (see footprintCap)
+export const S_CEIL = 16; // absolute limit on the footprint, however big the tower
+export const SUPPORT = 0.45; // a tier is at least this fraction of the widest tier above it
+export const SLENDER = 5; // ...and at least 1/SLENDER of the tower height resting on it
+export const TOWER_ASPECT = 2; // target height / width of a big tower, used to derive its footprint cap
 export const OVERHANG_MAX = 1.5; // a layer's block length may be at most this x the across-span of the layer below
 export const MAX_PER_ROW = 7; // blocks per physical layer in a wide tier
 export const CAP_HEIGHT = 0.9; // the analysed project's own block, crowning the tower
@@ -76,7 +80,7 @@ export function assignLevels(items) {
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
 /** Greedy row packer: take blocks from items[i..] that fit a span of U. Returns the row and its widths. */
-function packRow(items, i, U, maxPer) {
+function packRow(items, i, U, maxPer, minSpan = S_MIN) {
   const usable = (k) => U - BLOCK_GAP * (k - 1);
   const row = [items[i]];
   let sum = items[i].phys.width.value;
@@ -91,7 +95,7 @@ function packRow(items, i, U, maxPer) {
   }
   const k = row.length;
   const sFull = usable(k) / sum;
-  const sMin = (Math.min(U, S_MIN) - BLOCK_GAP * (k - 1)) / sum; // never thinner than the waist
+  const sMin = (Math.min(U, minSpan) - BLOCK_GAP * (k - 1)) / sum; // never thinner than the waist / the support it owes
   const s = Math.min(sFull, Math.max(Math.min(sFull, 1.5), sMin)); // sparse rows stay partial (centred)
   const widths = row.map((it) => it.phys.width.value * s);
   const span = widths.reduce((a, b) => a + b, 0) + BLOCK_GAP * (k - 1);
@@ -148,7 +152,8 @@ function uniformLayout(items, cap, W = TOWER_WIDTH) {
  *          layers:[{index, axis, height, y, length, span, level, blocks:[{dep, phys, w, c, length}]}]}
  *   axis 'x' => block length runs along X, blocks are arranged along Z (c = z centre)
  *   axis 'z' => block length runs along Z, blocks are arranged along X (c = x centre)
- * Depth mode: one tier per dependency level (level 0 at the bottom), tier side S = clamp(sqrt(sumWidths*TOWER_WIDTH)).
+ * Depth mode: one tier per dependency level (level 0 at the bottom), tier side S ~ sqrt(sumWidths*TOWER_WIDTH),
+ * capped at a footprint that grows with the tower (S_MAX..S_CEIL); oversized tiers are scaled down together.
  * Consecutive physical layers satisfy: span(upper) <= length(lower) and length(upper) <= OVERHANG_MAX * span(lower).
  */
 export function buildLayout(items, opts = {}) {
@@ -168,14 +173,32 @@ export function buildLayout(items, opts = {}) {
   let y = LAYER_GAP;
   let prev = null; // {L, A} of the layer below
   let maxL = S_MIN;
+  // Footprint cap grows with the tower: a side-S row holds ~S of block width, so a tower of total width
+  // `total` capped at S is ~avgHeight*total/S tall; solve for height = TOWER_ASPECT * S.
+  for (const t of tiers) t.raw = Math.sqrt(t.items.reduce((a, it) => a + it.phys.width.value, 0) * TOWER_WIDTH);
+  const total = tiers.reduce((a, t) => a + (t.raw * t.raw) / TOWER_WIDTH, 0);
+  const avgH = (HEIGHT_RANGE[0] + HEIGHT_RANGE[1]) / 2;
+  const cap = clamp(Math.sqrt((avgH * total) / TOWER_ASPECT), S_MAX, S_CEIL);
+  // If the biggest tier still exceeds the cap, shrink every tier by the same factor so they keep their proportions.
+  const scale = Math.min(1, cap / Math.max(...tiers.map((t) => t.raw)));
+  // Support, worked out from the top down: a tier must be at least SUPPORT x the widest tier above it and
+  // at least (height above) / SLENDER wide, or a heavy tower ends up balanced on a narrow waist.
+  let widestAbove = 0, heightAbove = 0;
+  for (let k = tiers.length - 1; k >= 0; k--) {
+    const t = tiers[k];
+    t.need = Math.min(cap, Math.max(S_MIN, SUPPORT * widestAbove, heightAbove / SLENDER));
+    t.S = Math.max(clamp(t.raw * scale, S_MIN, cap), t.need);
+    widestAbove = Math.max(widestAbove, t.S);
+    heightAbove += avgH * Math.max(1, (t.raw * t.raw) / TOWER_WIDTH / t.S);
+  }
   for (const t of tiers) {
-    const sum = t.items.reduce((a, it) => a + it.phys.width.value, 0);
-    const S = clamp(Math.sqrt(sum * TOWER_WIDTH), S_MIN, S_MAX);
+    const S = t.S;
+    const maxPer = Math.max(MAX_PER_ROW, Math.ceil(S / 1.1));
     let i = 0;
     while (i < t.items.length) {
       const L = prev ? Math.min(S, OVERHANG_MAX * prev.A) : S;
       const U = prev ? Math.min(S, prev.L) : S;
-      const r = packRow(t.items, i, U, MAX_PER_ROW);
+      const r = packRow(t.items, i, U, maxPer, t.need);
       y = finishLayer(layers, y, layers.length % 2 === 0 ? 'x' : 'z', L, r.span, t.level, r.row, r.widths);
       prev = { L, A: r.span };
       maxL = Math.max(maxL, L);
