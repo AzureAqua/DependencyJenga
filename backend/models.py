@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 METRIC_KEYS = (
     "size_bytes", "import_count", "dependents_in_tree", "global_dependents",
     "recent_commits", "recent_commits_source", "open_issues", "open_prs",
-    "stars", "age_days", "first_release", "last_release",
+    "stars", "age_days", "first_release", "last_release", "vuln_count", "max_cvss",
 )
 
 
@@ -30,6 +30,8 @@ class Dep:
     # final, serialised edges: ids present in the returned list (set by the analyzer after the cap)
     depends_on: list = field(default_factory=list)
     metrics: dict = field(default_factory=empty_metrics)
+    # known vulnerabilities (see vulns.py)
+    vulns: list = field(default_factory=list)
     # scratch values used by the metrics stage (not serialised)
     extra: dict = field(default_factory=dict)
 
@@ -46,6 +48,7 @@ class Dep:
             "repo_url": self.repo_url, "description": self.description,
             "depends_on": list(self.depends_on),
             "metrics": m,
+            "vulns": list(self.vulns),
         }
 
 

@@ -8,13 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='20' width='26' height='8' rx='1' fill='%2378b4ea' stroke='%232b2118' stroke-width='2'/%3E%3Crect x='6' y='11' width='20' height='8' rx='1' fill='%23e4572e' stroke='%232b2118' stroke-width='2'/%3E%3Crect x='9' y='2' width='14' height='8' rx='1' fill='%23f4c95d' stroke='%232b2118' stroke-width='2'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // apply the saved theme before first paint (no light flash in dark mode)
+    try { const t = JSON.parse(localStorage.getItem('dj.settings') || '{}').theme; if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) { /* ignore */ }
+  </script>
   <script type="importmap">
   {
     "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
       "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-      "@dimforge/rapier3d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.12.0/rapier.es.js"
+      "@dimforge/rapier3d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.21.0/dist/rapier.mjs",
+      "@dimforge/rapier3d-simd-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-simd-compat@0.21.0/dist/rapier.mjs"
     }
   }
   </script>
@@ -24,36 +30,63 @@
 
   <!-- in-game HUD -->
   <div id="hud" hidden>
-    <header class="hud-top">
-      <div class="brand">Dependency <b>Jenga</b></div>
-      <div class="players" id="players"></div>
-      <div class="hud-actions">
-        <div class="seg" id="limit-seg" title="Number of blocks in the tower">
-          <button data-n="30">30</button><button data-n="54">54</button><button data-n="90">90</button>
+    <header class="topbar">
+      <div class="panel repo-panel">
+        <div class="repo-line">
+          <a id="repo-name" class="repo-name" target="_blank" rel="noopener noreferrer"></a>
+          <span class="commit" id="repo-commit" title="Commit analysed"></span>
         </div>
-        <button class="btn small" id="btn-new">New repo</button>
+        <div class="muted small" id="repo-meta"></div>
+      </div>
+      <div class="players" id="players" aria-label="Players"></div>
+      <div class="actions">
+        <button class="icon-btn" id="btn-link" type="button" title="Copy a link to this game (repo + settings)" aria-label="Copy link">&#128279;</button>
+        <button class="icon-btn" id="btn-theme" type="button" title="Theme: auto" aria-label="Switch theme"></button>
+        <button class="icon-btn" id="btn-settings" type="button" title="Settings" aria-label="Settings">&#9881;</button>
+        <button class="btn small" id="btn-new" type="button">New repo</button>
       </div>
     </header>
 
-    <aside class="card left" id="left">
-      <div class="repo-name" id="repo-name"></div>
-      <div class="muted" id="repo-meta"></div>
-      <div class="stats"><span>Turn <b id="turn-no">1</b></span><span>Blocks <b id="blocks-left">0</b></span></div>
-      <details id="warnings" hidden><summary><span id="warn-count"></span></summary><ul id="warn-list"></ul></details>
-      <details open class="legend-box"><summary>Legend</summary>
-        <div id="kind-legend" class="kind-legend"></div>
-        <div id="mapping-legend-hud" class="mapping-legend"></div>
+    <aside class="side-left">
+      <section class="panel status" aria-label="Game status">
+        <div class="stats">
+          <div><span class="label">Round</span><b id="round-no">1</b></div>
+          <div><span class="label">Turn</span><b id="turn-no">1</b></div>
+          <div><span class="label">Blocks left</span><b id="blocks-left">0</b></div>
+        </div>
+        <div class="exploit" id="exploit" hidden>
+          <span class="exploit-icon" aria-hidden="true">!</span>
+          <span class="exploit-body"><span id="exploit-text"></span><span class="exploit-bar"><i id="exploit-meter"></i></span></span>
+        </div>
+        <details id="warnings" hidden><summary><span id="warn-count"></span></summary><ul id="warn-list"></ul></details>
+      </section>
+      <details class="panel legend" id="legend-box" open>
+        <summary>Reading a block</summary>
+        <div id="look-legend" class="look-legend"></div>
       </details>
     </aside>
 
-    <aside class="card right" id="info" hidden></aside>
-    <div class="removed" id="removed" hidden><span class="removed-title">Pulled out:</span><span id="removed-list"></span></div>
-    <div class="hint-bar" id="hintbar">Drag a block in any direction to work it out (hold Shift to lift). Drag empty space to orbit, wheel to zoom.</div>
+    <aside class="panel side-right info" id="info" hidden></aside>
+
+    <footer class="bottombar">
+      <div class="removed" id="removed" hidden><span class="removed-title">Pulled out:</span><span id="removed-list"></span></div>
+      <div class="statusbar" id="statusbar">
+        <span class="dot" id="status-dot"></span><span id="hintbar"></span>
+        <span class="place-ui" id="place-ui" hidden>
+          <button class="btn small" id="btn-rotate" type="button">Rotate <kbd>R</kbd></button>
+          <button class="btn small primary" id="btn-drop" type="button">Drop <kbd>Enter</kbd></button>
+        </span>
+        <button class="btn small primary" id="btn-rematch-bar" type="button" hidden>Rematch</button>
+      </div>
+    </footer>
   </div>
 
   <!-- start screen -->
   <section id="start" class="screen">
     <div class="start-inner">
+      <div class="start-tools">
+        <button class="icon-btn" id="btn-theme-start" type="button" title="Theme: auto" aria-label="Switch theme"></button>
+      </div>
       <h1>Dependency <span>Jenga</span></h1>
       <p class="tag">All modern digital infrastructure, resting on a few tiny blocks. Pull carefully.</p>
       <form id="analyze-form" class="analyze">
@@ -62,20 +95,22 @@
       </form>
       <div class="row">
         <button class="btn" id="btn-demo" type="button">Try demo tower</button>
-        <div class="seg-wrap">Blocks
-          <div class="seg" id="start-limit-seg"><button data-n="30">30</button><button data-n="54">54</button><button data-n="90">90</button></div>
-        </div>
+        <button class="btn" id="btn-settings-start" type="button">&#9881; Game settings</button>
+        <span class="muted" id="settings-summary"></span>
       </div>
       <div class="error" id="start-error" hidden></div>
       <div class="explain">
-        <div class="card">
+        <div class="panel">
           <h3>How it works</h3>
-          <p>We read the repo's dependencies and stack them into a tower: languages and runtimes at the bottom, leaf packages on top
-          (like <i>xkcd 2347</i>). Two players take turns pulling a block out. Whoever topples the tower loses.</p>
+          <p>We read the repo's dependencies and stack them into a tower: languages and runtimes at the bottom, leaf packages
+          higher up (like <i>xkcd 2347</i>), and the project itself on top. Players take turns pulling a block out; whoever
+          topples the tower loses.</p>
+          <p>Every block's look comes from real data about that dependency and tells you how it behaves. Blocks with known
+          CVEs start shaking after every turn a few rounds in, harder each round, so pull them out before they bring it all down.</p>
         </div>
-        <div class="card">
-          <h3>Real data becomes physics</h3>
-          <div id="mapping-legend" class="mapping-legend"></div>
+        <div class="panel">
+          <h3>Reading a block</h3>
+          <div id="look-legend-start" class="look-legend"></div>
         </div>
       </div>
     </div>
@@ -87,26 +122,105 @@
       <div class="stack"><i></i><i></i><i></i><i></i><i></i></div>
       <h2 id="loading-msg">Analyzing...</h2>
       <p class="muted">This can take 10-40 seconds. <span id="loading-time">0s</span></p>
-      <button class="btn small" id="btn-cancel">Cancel</button>
+      <button class="btn small" id="btn-cancel" type="button">Cancel</button>
     </div>
   </section>
 
   <!-- game over -->
   <section id="gameover" class="screen over" hidden>
-    <div class="card over-card" id="over-card">
+    <div class="panel over-card" id="over-card">
       <div class="crash" id="over-crash">CRASH</div>
       <h2 id="over-title"></h2>
       <p id="over-detail" class="muted"></p>
       <div class="row">
-        <button class="btn primary" id="btn-rematch">Rematch (same tower)</button>
-        <button class="btn" id="btn-over-new">New repo</button>
-        <button class="btn small" id="btn-over-watch">Watch the rubble</button>
+        <button class="btn primary" id="btn-rematch" type="button">Rematch (same tower)</button>
+        <button class="btn" id="btn-over-new" type="button">New repo</button>
+        <button class="btn small" id="btn-over-watch" type="button">Watch the rubble</button>
       </div>
     </div>
   </section>
 
+  <!-- settings -->
+  <dialog id="settings" class="panel settings" aria-labelledby="settings-title">
+    <form method="dialog" id="settings-form">
+      <h2 id="settings-title">Game settings</h2>
+
+      <fieldset>
+        <legend>Game</legend>
+        <div class="field">
+          <span class="field-label">Players</span>
+          <div class="seg" id="set-players" role="radiogroup" aria-label="Players">
+            <button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button>
+          </div>
+        </div>
+        <label class="field">
+          <span class="field-label">Blocks in the tower <output id="set-limit-out"></output></span>
+          <input type="range" id="set-limit" min="5" max="500" step="1">
+          <small class="muted" id="set-limit-note"></small>
+        </label>
+        <label class="field">
+          <span class="field-label">Locked rows at the top <output id="set-locked-out"></output></span>
+          <input type="range" id="set-locked" min="0" max="8" step="1">
+          <small class="muted">Your project's own block is always locked.</small>
+        </label>
+        <label class="field check">
+          <input type="checkbox" id="set-place">
+          <span><span class="field-label">Put pulled blocks back on top</span>
+          <small class="muted">Like real Jenga: after pulling a block out you have to stack it on top. If it falls off, you lose.</small></span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Hazards</legend>
+        <label class="field check">
+          <input type="checkbox" id="set-exploits">
+          <span><span class="field-label">Exploits: blocks with known CVEs shake</span>
+          <small class="muted">After every turn, harder each round, and harder for a higher CVSS score.</small></span>
+        </label>
+        <label class="field indent">
+          <span class="field-label">First shake in round <output id="set-start-out"></output></span>
+          <input type="range" id="set-start" min="1" max="10" step="1">
+        </label>
+        <div class="field indent">
+          <span class="field-label">How fast it escalates</span>
+          <div class="seg" id="set-pace" role="radiogroup" aria-label="Escalation">
+            <button type="button" data-v="0.6">Gentle</button><button type="button" data-v="1">Normal</button><button type="button" data-v="1.6">Brutal</button>
+          </div>
+        </div>
+        <label class="field check">
+          <input type="checkbox" id="set-fragile">
+          <span><span class="field-label">Fragile blocks pop</span>
+          <small class="muted">Repos with a big backlog of open issues and PRs shatter if hit too hard.</small></span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Display</legend>
+        <div class="field">
+          <span class="field-label">Theme</span>
+          <div class="seg" id="set-theme" role="radiogroup" aria-label="Theme">
+            <button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-label">Graphics</span>
+          <div class="seg" id="set-graphics" role="radiogroup" aria-label="Graphics quality">
+            <button type="button" data-v="high">Sharp</button><button type="button" data-v="balanced">Balanced</button><button type="button" data-v="fast">Fast</button>
+          </div>
+          <small class="muted">Fast drops shadows and renders at lower resolution, for big towers or slower machines.</small>
+        </div>
+      </fieldset>
+
+      <p class="muted small" id="settings-restart-note">Applying restarts the current game with the same repo.</p>
+      <div class="row end">
+        <button class="btn" value="cancel" type="submit">Cancel</button>
+        <button class="btn primary" value="apply" type="submit" id="settings-apply">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="tooltip" hidden></div>
-  <div id="toast" hidden></div>
+  <div id="toast" role="status" hidden></div>
   <script type="module" src="main.js"></script>
 </body>
 </html>

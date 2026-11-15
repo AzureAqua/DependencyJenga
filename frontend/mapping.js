@@ -4,7 +4,7 @@
 //
 //   id        unique key
 //   prop      physics property name written onto every block's `phys` object
-//             (consumers: tower.js reads `width`; game.js reads `density`, `friction`,
+//             (consumers: tower.js reads `width`; game.js reads `density`, `friction`, `fragility`,
 //              and optionally `restitution`, `linearDamping`, `angularDamping`)
 //   enabled   false => entry is ignored (kept as a ready-made example)
 //   label     human name of the metric (UI legend)
@@ -12,7 +12,7 @@
 //   scale     'log' | 'linear'       transform applied before normalising
 //   clamp     [lowPct, highPct]      percentile clamp across the CURRENT dependency set
 //                                    (falls back to min/max when the set is tiny)
-//   range     [out0, out1]           output range: t=0 -> out0, t=1 -> out1
+//   range     [out0, out1]           output range: t=0 -> out0, t=1 -> out1 (may run downwards)
 //   nullT     normalised position (0..1) used when the metric is missing (null)
 //   legend    one-line explanation shown in the UI
 //
@@ -43,6 +43,7 @@ export const MAPPINGS = [
     range: [0.7, 1.7], // world units (tower is 3.6 wide)
     nullT: 0.25,
     legend: 'Bigger bundle → wider block',
+    look: 'wider',
   },
   {
     id: 'uses',
@@ -56,6 +57,7 @@ export const MAPPINGS = [
     range: [0.5, 3.5],
     nullT: 0.35,
     legend: 'More uses (imports + dependents) → heavier block',
+    look: 'darker = heavier',
   },
   {
     id: 'commits',
@@ -66,9 +68,27 @@ export const MAPPINGS = [
     source: (d) => num(d.metrics?.recent_commits),
     scale: 'log',
     clamp: [5, 95],
-    range: [0.1, 0.75],
-    nullT: 0.2,
-    legend: 'Actively maintained → grippy; abandoned → slippery',
+    range: [0.75, 0.1], // more churn -> less friction
+    nullT: 0.2, // no data: assume a quiet project (fairly grippy)
+    legend: 'Lots of recent changes → slippery; settled → grippy',
+    look: 'glossy & streaked = slippery, matte & knurled = grippy',
+  },
+  {
+    id: 'backlog',
+    prop: 'fragility',
+    enabled: true,
+    label: 'Open issues + PRs',
+    target: 'fragility',
+    source: (d) => {
+      const i = num(d.metrics?.open_issues), p = num(d.metrics?.open_prs);
+      return i === null && p === null ? null : (i ?? 0) + (p ?? 0);
+    },
+    scale: 'log',
+    clamp: [5, 95],
+    range: [0, 1], // fragility.js turns this into how hard a knock the block survives
+    nullT: 0, // no data: assume sturdy
+    legend: 'Big backlog of open issues and PRs → fragile; pops if hit too hard',
+    look: 'more cracks = more fragile',
   },
 
   // ---- Examples for future properties (flip `enabled` to true to try them) ----
@@ -110,7 +130,10 @@ function percentile(sorted, p) {
 
 /**
  * Normalise every enabled mapping across `deps`.
- * Returns array (parallel to deps) of { [prop]: {value, t, raw, missing, mappingId} }.
+ * Returns array (parallel to deps) of { [prop]: {value, t, level, raw, missing, mappingId} }.
+ *   t      position of the metric within the set (0..1)
+ *   level  position of the resulting physics value within its range, low -> high (0..1); equals t unless the
+ *          range runs downwards. Appearance and UI bars use this, so they show the physics, not the metric.
  */
 export function computePhysics(deps, mappings = MAPPINGS) {
   const out = deps.map(() => ({}));
@@ -135,7 +158,8 @@ export function computePhysics(deps, mappings = MAPPINGS) {
       else if (hi - lo < 1e-9) t = 0.5;
       else t = Math.min(1, Math.max(0, (xs[i] - lo) / (hi - lo)));
       const value = mp.range[0] + (mp.range[1] - mp.range[0]) * t;
-      out[i][mp.prop] = { value, t, raw: raws[i], missing, mappingId: mp.id };
+      const level = mp.range[1] >= mp.range[0] ? t : 1 - t;
+      out[i][mp.prop] = { value, t, level, raw: raws[i], missing, mappingId: mp.id };
     });
   }
   return out;

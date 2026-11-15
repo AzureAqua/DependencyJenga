@@ -9,6 +9,8 @@ export const S_MIN = 2.4; // narrowest tier footprint (waist)
 export const S_MAX = 7; // widest tier footprint
 export const OVERHANG_MAX = 1.5; // a layer's block length may be at most this x the across-span of the layer below
 export const MAX_PER_ROW = 7; // blocks per physical layer in a wide tier
+export const CAP_HEIGHT = 0.9; // the analysed project's own block, crowning the tower
+export const CAP_MAX_WIDTH = 2;
 
 const KIND_RANK = {
   language: 0, runtime: 1, system: 2, package_manager: 3, build_tool: 4, container: 5, ci: 6, package: 7,
@@ -96,11 +98,11 @@ function packRow(items, i, U, maxPer) {
   return { row, widths, span, next: j };
 }
 
-function finishLayer(layers, y, axis, length, span, level, row, widths) {
+function finishLayer(layers, y, axis, length, span, level, row, widths, fixedHeight) {
   const k = row.length;
   let cursor = -span / 2;
   const avgT = row.reduce((a, it) => a + it.phys.width.t, 0) / k;
-  const height = HEIGHT_RANGE[0] + (HEIGHT_RANGE[1] - HEIGHT_RANGE[0]) * avgT;
+  const height = fixedHeight ?? HEIGHT_RANGE[0] + (HEIGHT_RANGE[1] - HEIGHT_RANGE[0]) * avgT;
   const blocks = row.map((it, bi) => {
     const w = widths[bi];
     const c = cursor + w / 2;
@@ -111,8 +113,21 @@ function finishLayer(layers, y, axis, length, span, level, row, widths) {
   return y + height + LAYER_GAP;
 }
 
+/**
+ * The analysed project as one block on top of everything (xkcd 2347's "all modern digital infrastructure").
+ * cap: {dep, phys}; phys.width is ignored - the block is sized to sit safely on the layer below.
+ */
+function capLayer(layers, y, cap) {
+  const prev = layers[layers.length - 1];
+  const L = prev ? Math.min(OVERHANG_MAX * prev.span, Math.max(prev.length, S_MIN)) : TOWER_WIDTH;
+  const w = prev ? Math.min(prev.length, CAP_MAX_WIDTH) : CAP_MAX_WIDTH;
+  y = finishLayer(layers, y, layers.length % 2 === 0 ? 'x' : 'z', L, w, null, [cap], [w], CAP_HEIGHT);
+  layers[layers.length - 1].cap = true;
+  return y;
+}
+
 /** Old layout: every block TOWER_WIDTH long, layers packed by kind order (used when there is no dependency graph). */
-function uniformLayout(items, W = TOWER_WIDTH) {
+function uniformLayout(items, cap, W = TOWER_WIDTH) {
   const layers = [];
   let y = LAYER_GAP;
   let i = 0;
@@ -121,12 +136,14 @@ function uniformLayout(items, W = TOWER_WIDTH) {
     y = finishLayer(layers, y, layers.length % 2 === 0 ? 'x' : 'z', W, r.span, null, r.row, r.widths);
     i = r.next;
   }
+  if (cap) y = capLayer(layers, y, cap);
   return { width: W, layers, totalHeight: y, mode: 'uniform', levelCount: 0 };
 }
 
 /**
  * items: [{dep, phys}] already ordered bottom->top. phys.width.value drives block width.
  * opts.mergeSingletons: fold single-block levels into the level below (stability fallback).
+ * opts.capstone: {dep, phys} placed alone as the top layer (flagged layer.cap) - the analysed project itself.
  * Returns {width (max block length), mode, levelCount, totalHeight,
  *          layers:[{index, axis, height, y, length, span, level, blocks:[{dep, phys, w, c, length}]}]}
  *   axis 'x' => block length runs along X, blocks are arranged along Z (c = z centre)
@@ -136,7 +153,7 @@ function uniformLayout(items, W = TOWER_WIDTH) {
  */
 export function buildLayout(items, opts = {}) {
   const lv = assignLevels(items);
-  if (!lv) return uniformLayout(items);
+  if (!lv) return uniformLayout(items, opts.capstone);
   let tiers = [];
   for (let l = 0; l < lv.count; l++) tiers.push({ level: l, items: items.filter((it) => lv.levelOf.get(it.dep.id) === l) });
   if (opts.mergeSingletons) {
@@ -165,5 +182,6 @@ export function buildLayout(items, opts = {}) {
       i = r.next;
     }
   }
+  if (opts.capstone) y = capLayer(layers, y, opts.capstone);
   return { width: maxL, layers, totalHeight: y, mode: 'depth', levelCount: tiers.length };
 }

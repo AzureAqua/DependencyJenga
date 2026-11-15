@@ -8,14 +8,14 @@ import os
 import time
 from urllib.parse import urlparse
 
-from . import metrics, repo, transitive
+from . import metrics, repo, transitive, vulns
 from .models import Dep
 from .repo import AnalysisError
 from .scanners import scan_repo
 from .scanners.system import add_synthetic_edges
 
-MAX_DEPS = 250
-CACHE_VERSION = 2   # bump to invalidate cached results when the result shape/logic changes
+MAX_DEPS = 500   # the biggest tower the frontend physics is tested to hold together
+CACHE_VERSION = 4   # bump to invalidate cached results when the result shape/logic changes
 TRANSITIVE_BUDGET = 15.0
 CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache")
 MEM_TTL = 24 * 3600
@@ -111,7 +111,8 @@ async def _run(url: str, key: str) -> dict:
     warnings += await _expand(deps)
     metrics.compute_dependents(deps)
     deps = cap_deps(deps, warnings)
-    warnings += await metrics.enrich(deps, budget=40.0)
+    enriched, vuln_warnings = await asyncio.gather(metrics.enrich(deps, budget=40.0), vulns.scan(deps))
+    warnings += enriched + vuln_warnings
     deps = _sort(deps)
     link_deps(deps)
     return {

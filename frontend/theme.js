@@ -1,27 +1,5 @@
-// Colours shared by the 3D blocks and the HTML legend.
-
-export const KIND_COLORS = {
-  language: '#f08a5d',
-  runtime: '#f4c95d',
-  system: '#b9a2dc',
-  package_manager: '#86cfae',
-  build_tool: '#78b4ea',
-  container: '#7fd1d6',
-  ci: '#ee9fb8',
-};
-
-export const ECO_COLORS = {
-  npm: '#ea9890',
-  pypi: '#92bde3',
-  cargo: '#e5ab75',
-  go: '#93d6df',
-  maven: '#d6a0d6',
-  rubygems: '#e98aa0',
-  composer: '#a8a6e0',
-  nuget: '#8fb0e8',
-  hex: '#c3a1e8',
-  pub: '#8fd8c8',
-};
+// Shared UI constants. Block colours are not here: they encode gameplay properties (see appearance.js).
+import { vulnHue } from './appearance.js';
 
 export const KIND_LABELS = {
   language: 'Language',
@@ -32,19 +10,17 @@ export const KIND_LABELS = {
   container: 'Container',
   ci: 'CI action',
   package: 'Package',
+  project: 'Your project',
 };
 
-export const PLAYER_COLORS = ['#e4572e', '#1b998b'];
+export const PLAYER_COLORS = ['#e4572e', '#1b998b', '#7b5ea7', '#d99a00'];
 
-function hashHue(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h % 360;
-}
-
-export function colorFor(dep) {
-  if (dep.kind !== 'package' && KIND_COLORS[dep.kind]) return KIND_COLORS[dep.kind];
-  const eco = (dep.ecosystem || '').toLowerCase();
-  if (ECO_COLORS[eco]) return ECO_COLORS[eco];
-  return `hsl(${hashHue(eco || 'x')}, 55%, 76%)`;
+/** CVSS severity bands (score -> colour + label) for the info panel, on the same hue scale as the blocks. */
+export function cvssBand(score) {
+  if (score == null) return { color: '#8a7b68', label: 'unknown' };
+  const color = `hsl(${vulnHue(score).toFixed(0)}, 80%, 40%)`;
+  if (score >= 9) return { color, label: 'critical' };
+  if (score >= 7) return { color, label: 'high' };
+  if (score >= 4) return { color, label: 'medium' };
+  return { color, label: 'low' };
 }

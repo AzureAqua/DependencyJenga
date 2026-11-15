@@ -28,11 +28,14 @@
     "stars": null,
     "age_days": 11000,
     "first_release": "1994-12-04",
-    "last_release": "2024-06-06"
+    "last_release": "2024-06-06",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "system:node",
@@ -56,11 +59,14 @@
     "stars": 106000,
     "age_days": 5400,
     "first_release": "2010-04-04",
-    "last_release": "2024-09-26"
+    "last_release": "2024-09-26",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:libc (glibc)"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "system:linux",
@@ -84,9 +90,12 @@
     "stars": null,
     "age_days": 12000,
     "first_release": "1991-09-17",
-    "last_release": "2024-09-20"
+    "last_release": "2024-09-20",
+    "vuln_count": null,
+    "max_cvss": null
    },
-   "depends_on": []
+   "depends_on": [],
+   "vulns": []
   },
   {
    "id": "system:libc (glibc)",
@@ -110,11 +119,14 @@
     "stars": null,
     "age_days": 12000,
     "first_release": "1992-03-09",
-    "last_release": "2024-05-17"
+    "last_release": "2024-05-17",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:linux"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "system:openssl",
@@ -138,11 +150,14 @@
     "stars": 25000,
     "age_days": 9000,
     "first_release": "2000-05-26",
-    "last_release": "2024-07-16"
+    "last_release": "2024-07-16",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:libc (glibc)"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "system:git",
@@ -166,11 +181,14 @@
     "stars": null,
     "age_days": 7000,
     "first_release": "2005-04-07",
-    "last_release": "2024-08-12"
+    "last_release": "2024-08-12",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:libc (glibc)"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:npm",
@@ -194,11 +212,14 @@
     "stars": 8400,
     "age_days": 5200,
     "first_release": "2010-10-21",
-    "last_release": "2024-09-30"
+    "last_release": "2024-09-30",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:vite",
@@ -222,13 +243,16 @@
     "stars": 65000,
     "age_days": 1500,
     "first_release": "2020-12-07",
-    "last_release": "2024-12-13"
+    "last_release": "2024-12-13",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:esbuild",
     "npm:picocolors",
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:esbuild",
@@ -252,11 +276,14 @@
     "stars": 36000,
     "age_days": 1700,
     "first_release": "2020-05-21",
-    "last_release": "2024-12-09"
+    "last_release": "2024-12-09",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "docker:node:20-alpine",
@@ -280,12 +307,15 @@
     "stars": null,
     "age_days": null,
     "first_release": null,
-    "last_release": null
+    "last_release": null,
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:libc (glibc)",
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "github-actions:actions/checkout",
@@ -309,11 +339,14 @@
     "stars": 5400,
     "age_days": 1900,
     "first_release": "2019-11-03",
-    "last_release": "2024-12-05"
+    "last_release": "2024-12-05",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "system:git"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "github-actions:actions/setup-node",
@@ -337,12 +370,15 @@
     "stars": 3000,
     "age_days": 1800,
     "first_release": "2020-02-11",
-    "last_release": "2024-12-07"
+    "last_release": "2024-12-07",
+    "vuln_count": null,
+    "max_cvss": null
    },
    "depends_on": [
     "github-actions:actions/checkout",
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:react",
@@ -366,11 +402,14 @@
     "stars": 222000,
     "age_days": 4200,
     "first_release": "2013-07-17",
-    "last_release": "2024-10-20"
+    "last_release": "2024-10-20",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:loose-envify"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:react-dom",
@@ -394,12 +433,15 @@
     "stars": 222000,
     "age_days": 4200,
     "first_release": "2013-07-17",
-    "last_release": "2024-10-20"
+    "last_release": "2024-10-20",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:react",
     "npm:scheduler"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:scheduler",
@@ -423,11 +465,14 @@
     "stars": 222000,
     "age_days": 3000,
     "first_release": "2016-10-29",
-    "last_release": "2024-11-13"
+    "last_release": "2024-11-13",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:loose-envify"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:loose-envify",
@@ -451,11 +496,14 @@
     "stars": 1300,
     "age_days": 3800,
     "first_release": "2014-08-21",
-    "last_release": "2024-10-28"
+    "last_release": "2024-10-28",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:js-tokens"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:js-tokens",
@@ -479,11 +527,14 @@
     "stars": 250,
     "age_days": 3500,
     "first_release": "2015-06-17",
-    "last_release": "2024-11-03"
+    "last_release": "2024-11-03",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:react-router",
@@ -507,10 +558,82 @@
     "stars": 52000,
     "age_days": 3600,
     "first_release": "2015-03-09",
-    "last_release": "2024-11-01"
+    "last_release": "2024-11-01",
+    "vuln_count": 4,
+    "max_cvss": 6.5
    },
    "depends_on": [
     "npm:react"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2025-68470",
+     "osv_id": "GHSA-9jcx-v3wj-wh4m",
+     "cves": [
+      "CVE-2025-68470"
+     ],
+     "ids": [
+      "CVE-2025-68470",
+      "GHSA-9jcx-v3wj-wh4m"
+     ],
+     "summary": "React Router has unexpected external redirect via untrusted paths",
+     "cvss": 6.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-9jcx-v3wj-wh4m"
+    },
+    {
+     "id": "CVE-2026-53666",
+     "osv_id": "GHSA-337j-9hxr-rhxg",
+     "cves": [
+      "CVE-2026-53666"
+     ],
+     "ids": [
+      "CVE-2026-53666",
+      "GHSA-337j-9hxr-rhxg"
+     ],
+     "summary": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+     "cvss": 6.1,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-337j-9hxr-rhxg"
+    },
+    {
+     "id": "CVE-2026-40181",
+     "osv_id": "GHSA-2j2x-hqr9-3h42",
+     "cves": [
+      "CVE-2026-40181"
+     ],
+     "ids": [
+      "CVE-2026-40181",
+      "GHSA-2j2x-hqr9-3h42"
+     ],
+     "summary": "React Router's same-origin redirect with path starting // causes open redirect via protocol-relative URL reinterpretation",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:U",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-2j2x-hqr9-3h42"
+    },
+    {
+     "id": "CVE-2026-53669",
+     "osv_id": "GHSA-wrjc-x8rr-h8h6",
+     "cves": [
+      "CVE-2026-53669"
+     ],
+     "ids": [
+      "CVE-2026-53669",
+      "GHSA-wrjc-x8rr-h8h6"
+     ],
+     "summary": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:L/SI:L/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-wrjc-x8rr-h8h6"
+    }
    ]
   },
   {
@@ -535,11 +658,14 @@
     "stars": 41000,
     "age_days": 1600,
     "first_release": "2020-08-29",
-    "last_release": "2024-12-11"
+    "last_release": "2024-12-11",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:react"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:lodash",
@@ -563,10 +689,48 @@
     "stars": 58000,
     "age_days": 4600,
     "first_release": "2012-06-12",
-    "last_release": "2024-10-12"
+    "last_release": "2024-10-12",
+    "vuln_count": 2,
+    "max_cvss": 8.1
    },
    "depends_on": [
     "system:node"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-4800",
+     "osv_id": "GHSA-r5fr-rjxr-66jc",
+     "cves": [
+      "CVE-2026-4800"
+     ],
+     "ids": [
+      "CVE-2026-4800",
+      "GHSA-r5fr-rjxr-66jc"
+     ],
+     "summary": "lodash vulnerable to Code Injection via `_.template` imports key names",
+     "cvss": 8.1,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-r5fr-rjxr-66jc"
+    },
+    {
+     "id": "CVE-2025-13465",
+     "osv_id": "GHSA-xxjr-mmjv-4gpg",
+     "cves": [
+      "CVE-2025-13465"
+     ],
+     "ids": [
+      "CVE-2025-13465",
+      "GHSA-xxjr-mmjv-4gpg"
+     ],
+     "summary": "Lodash has Prototype Pollution Vulnerability in `_.unset`, `_.omit`, and `_.pullAt` functions",
+     "cvss": 6.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-xxjr-mmjv-4gpg"
+    }
    ]
   },
   {
@@ -591,13 +755,51 @@
     "stars": 64000,
     "age_days": 5000,
     "first_release": "2011-05-09",
-    "last_release": "2024-10-04"
+    "last_release": "2024-10-04",
+    "vuln_count": 2,
+    "max_cvss": 6.1
    },
    "depends_on": [
     "npm:body-parser",
     "npm:debug",
     "npm:qs",
     "npm:mime-types"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2024-29041",
+     "osv_id": "GHSA-rv95-896h-c2vc",
+     "cves": [
+      "CVE-2024-29041"
+     ],
+     "ids": [
+      "CVE-2024-29041",
+      "GHSA-rv95-896h-c2vc"
+     ],
+     "summary": "Express.js Open Redirect in malformed URLs",
+     "cvss": 6.1,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-rv95-896h-c2vc"
+    },
+    {
+     "id": "CVE-2024-43796",
+     "osv_id": "GHSA-qw6h-vgh9-j6wx",
+     "cves": [
+      "CVE-2024-43796"
+     ],
+     "ids": [
+      "CVE-2024-43796",
+      "GHSA-qw6h-vgh9-j6wx"
+     ],
+     "summary": "express vulnerable to XSS via response.redirect()",
+     "cvss": 5.0,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-qw6h-vgh9-j6wx"
+    }
    ]
   },
   {
@@ -622,11 +824,66 @@
     "stars": 5200,
     "age_days": 4400,
     "first_release": "2012-12-29",
-    "last_release": "2024-10-16"
+    "last_release": "2024-10-16",
+    "vuln_count": 3,
+    "max_cvss": 7.5
    },
    "depends_on": [
     "npm:qs",
     "npm:debug"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-111181",
+     "osv_id": "GHSA-27r3-jxmh-p828",
+     "cves": [
+      "CVE-2026-111181"
+     ],
+     "ids": [
+      "CVE-2026-111181",
+      "GHSA-27r3-jxmh-p828"
+     ],
+     "summary": "body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-27r3-jxmh-p828"
+    },
+    {
+     "id": "CVE-2024-45590",
+     "osv_id": "GHSA-qwcr-r2fm-qrc7",
+     "cves": [
+      "CVE-2024-45590"
+     ],
+     "ids": [
+      "CVE-2024-45590",
+      "GHSA-qwcr-r2fm-qrc7"
+     ],
+     "summary": "body-parser vulnerable to denial of service when url encoding is enabled",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-qwcr-r2fm-qrc7"
+    },
+    {
+     "id": "CVE-2026-12590",
+     "osv_id": "GHSA-v422-hmwv-36x6",
+     "cves": [
+      "CVE-2026-12590"
+     ],
+     "ids": [
+      "CVE-2026-12590",
+      "GHSA-v422-hmwv-36x6"
+     ],
+     "summary": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+     "cvss": 3.7,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "LOW",
+     "url": "https://osv.dev/vulnerability/GHSA-v422-hmwv-36x6"
+    }
    ]
   },
   {
@@ -651,10 +908,99 @@
     "stars": 8300,
     "age_days": 4800,
     "first_release": "2011-11-25",
-    "last_release": "2024-10-08"
+    "last_release": "2024-10-08",
+    "vuln_count": 5,
+    "max_cvss": 5.3
    },
    "depends_on": [
     "system:node"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-82417",
+     "osv_id": "GHSA-4mjr-xmp4-gh2g",
+     "cves": [
+      "CVE-2026-82417"
+     ],
+     "ids": [
+      "CVE-2026-82417",
+      "GHSA-4mjr-xmp4-gh2g"
+     ],
+     "summary": "qs: Denial of Service via Attacker Controlled isBuffer",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-4mjr-xmp4-gh2g"
+    },
+    {
+     "id": "CVE-2026-110816",
+     "osv_id": "GHSA-6pq8-jhm2-2vcw",
+     "cves": [
+      "CVE-2026-110816"
+     ],
+     "ids": [
+      "CVE-2026-110816",
+      "GHSA-6pq8-jhm2-2vcw"
+     ],
+     "summary": "qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-6pq8-jhm2-2vcw"
+    },
+    {
+     "id": "CVE-2026-8723",
+     "osv_id": "GHSA-q8mj-m7cp-5q26",
+     "cves": [
+      "CVE-2026-8723"
+     ],
+     "ids": [
+      "CVE-2026-8723",
+      "GHSA-q8mj-m7cp-5q26"
+     ],
+     "summary": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-q8mj-m7cp-5q26"
+    },
+    {
+     "id": "CVE-2025-15284",
+     "osv_id": "GHSA-6rw7-vpxm-498p",
+     "cves": [
+      "CVE-2025-15284"
+     ],
+     "ids": [
+      "CVE-2025-15284",
+      "GHSA-6rw7-vpxm-498p"
+     ],
+     "summary": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+     "cvss": 3.7,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "LOW",
+     "url": "https://osv.dev/vulnerability/GHSA-6rw7-vpxm-498p"
+    },
+    {
+     "id": "CVE-2026-2391",
+     "osv_id": "GHSA-w7fw-mjwx-w883",
+     "cves": [
+      "CVE-2026-2391"
+     ],
+     "ids": [
+      "CVE-2026-2391",
+      "GHSA-w7fw-mjwx-w883"
+     ],
+     "summary": "qs's arrayLimit bypass in comma parsing allows denial of service",
+     "cvss": 3.7,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "LOW",
+     "url": "https://osv.dev/vulnerability/GHSA-w7fw-mjwx-w883"
+    }
    ]
   },
   {
@@ -679,11 +1025,14 @@
     "stars": 10900,
     "age_days": 4400,
     "first_release": "2012-12-29",
-    "last_release": "2024-10-16"
+    "last_release": "2024-10-16",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:ms"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:ms",
@@ -707,11 +1056,14 @@
     "stars": 4500,
     "age_days": 3300,
     "first_release": "2016-01-03",
-    "last_release": "2024-11-07"
+    "last_release": "2024-11-07",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:axios",
@@ -735,11 +1087,542 @@
     "stars": 104000,
     "age_days": 3900,
     "first_release": "2014-05-13",
-    "last_release": "2024-10-26"
+    "last_release": "2024-10-26",
+    "vuln_count": 31,
+    "max_cvss": 8.7
    },
    "depends_on": [
     "npm:follow-redirects",
     "npm:form-data"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-44494",
+     "osv_id": "GHSA-35jp-ww65-95wh",
+     "cves": [
+      "CVE-2026-44494"
+     ],
+     "ids": [
+      "CVE-2026-44494",
+      "GHSA-35jp-ww65-95wh"
+     ],
+     "summary": "axios Vulnerable to Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy`",
+     "cvss": 8.7,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-35jp-ww65-95wh"
+    },
+    {
+     "id": "CVE-2026-25639",
+     "osv_id": "GHSA-43fc-jf86-j433",
+     "cves": [
+      "CVE-2026-25639"
+     ],
+     "ids": [
+      "CVE-2026-25639",
+      "GHSA-43fc-jf86-j433"
+     ],
+     "summary": "Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-43fc-jf86-j433"
+    },
+    {
+     "id": "CVE-2025-58754",
+     "osv_id": "GHSA-4hjh-wcwx-xvwj",
+     "cves": [
+      "CVE-2025-58754"
+     ],
+     "ids": [
+      "CVE-2025-58754",
+      "GHSA-4hjh-wcwx-xvwj"
+     ],
+     "summary": "Axios is vulnerable to DoS attack through lack of data size check",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-4hjh-wcwx-xvwj"
+    },
+    {
+     "id": "CVE-2026-42039",
+     "osv_id": "GHSA-62hf-57xw-28j9",
+     "cves": [
+      "CVE-2026-42039"
+     ],
+     "ids": [
+      "CVE-2026-42039",
+      "GHSA-62hf-57xw-28j9"
+     ],
+     "summary": "Axios: unbounded recursion in toFormData causes DoS via deeply nested request data",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-62hf-57xw-28j9"
+    },
+    {
+     "id": "CVE-2026-44496",
+     "osv_id": "GHSA-hfxv-24rg-xrqf",
+     "cves": [
+      "CVE-2026-44496"
+     ],
+     "ids": [
+      "CVE-2026-44496",
+      "GHSA-hfxv-24rg-xrqf"
+     ],
+     "summary": "Axios: Regular Expression Denial of Service (ReDoS) via Cookie Name Injection",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-hfxv-24rg-xrqf"
+    },
+    {
+     "id": "CVE-2026-44486",
+     "osv_id": "GHSA-j5f8-grm9-p9fc",
+     "cves": [
+      "CVE-2026-44486"
+     ],
+     "ids": [
+      "CVE-2026-44486",
+      "GHSA-j5f8-grm9-p9fc"
+     ],
+     "summary": "Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-j5f8-grm9-p9fc"
+    },
+    {
+     "id": "CVE-2024-39338",
+     "osv_id": "GHSA-8hc4-vh64-cxmj",
+     "cves": [
+      "CVE-2024-39338"
+     ],
+     "ids": [
+      "CVE-2024-39338",
+      "GHSA-8hc4-vh64-cxmj"
+     ],
+     "summary": "Server-Side Request Forgery in axios",
+     "cvss": 7.5,
+     "cvss_estimated": true,
+     "vector": null,
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-8hc4-vh64-cxmj"
+    },
+    {
+     "id": "CVE-2025-27152",
+     "osv_id": "GHSA-jr5f-v2jv-69x6",
+     "cves": [
+      "CVE-2025-27152"
+     ],
+     "ids": [
+      "CVE-2025-27152",
+      "GHSA-jr5f-v2jv-69x6"
+     ],
+     "summary": "axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL",
+     "cvss": 7.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N/E:P",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-jr5f-v2jv-69x6"
+    },
+    {
+     "id": "CVE-2026-44487",
+     "osv_id": "GHSA-p92q-9vqr-4j8v",
+     "cves": [
+      "CVE-2026-44487"
+     ],
+     "ids": [
+      "CVE-2026-44487",
+      "GHSA-p92q-9vqr-4j8v"
+     ],
+     "summary": "Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter",
+     "cvss": 7.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-p92q-9vqr-4j8v"
+    },
+    {
+     "id": "CVE-2026-42035",
+     "osv_id": "GHSA-6chq-wfr3-2hj9",
+     "cves": [
+      "CVE-2026-42035"
+     ],
+     "ids": [
+      "CVE-2026-42035",
+      "GHSA-6chq-wfr3-2hj9"
+     ],
+     "summary": "Axios: Header Injection via Prototype Pollution",
+     "cvss": 7.4,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-6chq-wfr3-2hj9"
+    },
+    {
+     "id": "CVE-2026-42033",
+     "osv_id": "GHSA-pf86-5x62-jrwf",
+     "cves": [
+      "CVE-2026-42033"
+     ],
+     "ids": [
+      "CVE-2026-42033",
+      "GHSA-pf86-5x62-jrwf"
+     ],
+     "summary": "Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking",
+     "cvss": 7.4,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-pf86-5x62-jrwf"
+    },
+    {
+     "id": "CVE-2026-42264",
+     "osv_id": "GHSA-q8qp-cvcw-x6jj",
+     "cves": [
+      "CVE-2026-42264"
+     ],
+     "ids": [
+      "CVE-2026-42264",
+      "GHSA-q8qp-cvcw-x6jj"
+     ],
+     "summary": "Axios has prototype pollution read-side gadgets in HTTP adapter that allow credential injection and request hijacking",
+     "cvss": 7.4,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-q8qp-cvcw-x6jj"
+    },
+    {
+     "id": "CVE-2026-42043",
+     "osv_id": "GHSA-pmwg-cvhr-8vh7",
+     "cves": [
+      "CVE-2026-42043"
+     ],
+     "ids": [
+      "CVE-2026-42043",
+      "GHSA-pmwg-cvhr-8vh7"
+     ],
+     "summary": "Axios: Incomplete Fix for CVE-2025-62718 — NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0",
+     "cvss": 7.2,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-pmwg-cvhr-8vh7"
+    },
+    {
+     "id": "CVE-2026-44495",
+     "osv_id": "GHSA-3g43-6gmg-66jw",
+     "cves": [
+      "CVE-2026-44495"
+     ],
+     "ids": [
+      "CVE-2026-44495",
+      "GHSA-3g43-6gmg-66jw"
+     ],
+     "summary": "axios Vulnerable to Credential Theft and Response Hijacking via Prototype Pollution Gadget in Config Merge",
+     "cvss": 7.0,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:L",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-3g43-6gmg-66jw"
+    },
+    {
+     "id": "CVE-2026-42038",
+     "osv_id": "GHSA-m7pr-hjqh-92cm",
+     "cves": [
+      "CVE-2026-42038"
+     ],
+     "ids": [
+      "CVE-2026-42038",
+      "GHSA-m7pr-hjqh-92cm"
+     ],
+     "summary": "Axios: no_proxy bypass via IP alias allows SSRF",
+     "cvss": 6.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-m7pr-hjqh-92cm"
+    },
+    {
+     "id": "CVE-2026-42044",
+     "osv_id": "GHSA-3w6x-2g7m-8v23",
+     "cves": [
+      "CVE-2026-42044"
+     ],
+     "ids": [
+      "CVE-2026-42044",
+      "GHSA-3w6x-2g7m-8v23"
+     ],
+     "summary": "Axios: Invisible JSON Response Tampering via Prototype Pollution Gadget in `parseReviver`",
+     "cvss": 6.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:H/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-3w6x-2g7m-8v23"
+    },
+    {
+     "id": "CVE-2026-67313",
+     "osv_id": "GHSA-42h9-826w-cgv3",
+     "cves": [
+      "CVE-2026-67313"
+     ],
+     "ids": [
+      "CVE-2026-67313",
+      "GHSA-42h9-826w-cgv3"
+     ],
+     "summary": "Axios: Excessive recursion in formDataToJSON can cause denial of service",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-42h9-826w-cgv3"
+    },
+    {
+     "id": "CVE-2026-67319",
+     "osv_id": "GHSA-7q8q-rj6j-mhjq",
+     "cves": [
+      "CVE-2026-67319"
+     ],
+     "ids": [
+      "CVE-2026-67319",
+      "GHSA-7q8q-rj6j-mhjq"
+     ],
+     "summary": "Axios: Nested axios option objects can consume polluted prototype values",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:L/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-7q8q-rj6j-mhjq"
+    },
+    {
+     "id": "CVE-2026-101902",
+     "osv_id": "GHSA-9fr6-4gfg-395g",
+     "cves": [
+      "CVE-2026-101902"
+     ],
+     "ids": [
+      "CVE-2026-101902",
+      "GHSA-9fr6-4gfg-395g"
+     ],
+     "summary": "Axios: Prototype-Pollution Gadget in the Default Instance Allows Inherited Object.prototype.method to Override HTTP Method",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:H/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-9fr6-4gfg-395g"
+    },
+    {
+     "id": "CVE-2026-101904",
+     "osv_id": "GHSA-j8rh-479h-cp32",
+     "cves": [
+      "CVE-2026-101904"
+     ],
+     "ids": [
+      "CVE-2026-101904",
+      "GHSA-j8rh-479h-cp32"
+     ],
+     "summary": "Axios: Header Injection via Inherited headers After Minimal Interceptor",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:N/SC:L/SI:H/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-j8rh-479h-cp32"
+    },
+    {
+     "id": "CVE-2026-67316",
+     "osv_id": "GHSA-mmx7-hfxf-jppx",
+     "cves": [
+      "CVE-2026-67316"
+     ],
+     "ids": [
+      "CVE-2026-67316",
+      "GHSA-mmx7-hfxf-jppx"
+     ],
+     "summary": "Axios: Prototype pollution gadgets can alter axios request construction",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-mmx7-hfxf-jppx"
+    },
+    {
+     "id": "CVE-2026-67312",
+     "osv_id": "GHSA-pmv8-rq9r-6j72",
+     "cves": [
+      "CVE-2026-67312"
+     ],
+     "ids": [
+      "CVE-2026-67312",
+      "GHSA-pmv8-rq9r-6j72"
+     ],
+     "summary": "Axios: Deep formToJSON Key Recursion Can Cause Denial of Service",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-pmv8-rq9r-6j72"
+    },
+    {
+     "id": "CVE-2026-42042",
+     "osv_id": "GHSA-xx6v-rp6x-q39c",
+     "cves": [
+      "CVE-2026-42042"
+     ],
+     "ids": [
+      "CVE-2026-42042",
+      "GHSA-xx6v-rp6x-q39c"
+     ],
+     "summary": "Axios: XSRF Token Cross-Origin Leakage via Prototype Pollution Gadget in `withXSRFToken` Boolean Coercion",
+     "cvss": 5.4,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-xx6v-rp6x-q39c"
+    },
+    {
+     "id": "CVE-2026-42037",
+     "osv_id": "GHSA-445q-vr5w-6q77",
+     "cves": [
+      "CVE-2026-42037"
+     ],
+     "ids": [
+      "CVE-2026-42037",
+      "GHSA-445q-vr5w-6q77"
+     ],
+     "summary": "Axios: CRLF Injection in multipart/form-data body via unsanitized blob.type in formDataToStream",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-445q-vr5w-6q77"
+    },
+    {
+     "id": "CVE-2026-42034",
+     "osv_id": "GHSA-5c9x-8gcm-mpgx",
+     "cves": [
+      "CVE-2026-42034"
+     ],
+     "ids": [
+      "CVE-2026-42034",
+      "GHSA-5c9x-8gcm-mpgx"
+     ],
+     "summary": "Axios' HTTP adapter-streamed uploads bypass maxBodyLength when maxRedirects: 0",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-5c9x-8gcm-mpgx"
+    },
+    {
+     "id": "CVE-2026-42036",
+     "osv_id": "GHSA-vf2m-468p-8v99",
+     "cves": [
+      "CVE-2026-42036"
+     ],
+     "ids": [
+      "CVE-2026-42036",
+      "GHSA-vf2m-468p-8v99"
+     ],
+     "summary": "Axios: HTTP adapter streamed responses bypass maxContentLength",
+     "cvss": 5.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-vf2m-468p-8v99"
+    },
+    {
+     "id": "CVE-2025-62718",
+     "osv_id": "GHSA-3p68-rc4w-qgx5",
+     "cves": [
+      "CVE-2025-62718"
+     ],
+     "ids": [
+      "CVE-2025-62718",
+      "GHSA-3p68-rc4w-qgx5"
+     ],
+     "summary": "Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF",
+     "cvss": 4.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-3p68-rc4w-qgx5"
+    },
+    {
+     "id": "CVE-2026-44490",
+     "osv_id": "GHSA-898c-q2cr-xwhg",
+     "cves": [
+      "CVE-2026-44490"
+     ],
+     "ids": [
+      "CVE-2026-44490",
+      "GHSA-898c-q2cr-xwhg"
+     ],
+     "summary": "axios has DoS & Header Injection via Prototype Pollution Read-Side Gadgets in axios merge functions",
+     "cvss": 4.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:L",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-898c-q2cr-xwhg"
+    },
+    {
+     "id": "CVE-2026-40175",
+     "osv_id": "GHSA-fvcv-3m26-pcqx",
+     "cves": [
+      "CVE-2026-40175"
+     ],
+     "ids": [
+      "CVE-2026-40175",
+      "GHSA-fvcv-3m26-pcqx"
+     ],
+     "summary": "Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain",
+     "cvss": 4.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-fvcv-3m26-pcqx"
+    },
+    {
+     "id": "CVE-2026-42041",
+     "osv_id": "GHSA-w9j2-pvgh-6h63",
+     "cves": [
+      "CVE-2026-42041"
+     ],
+     "ids": [
+      "CVE-2026-42041",
+      "GHSA-w9j2-pvgh-6h63"
+     ],
+     "summary": "Axios: Authentication Bypass via Prototype Pollution Gadget in `validateStatus` Merge Strategy",
+     "cvss": 4.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-w9j2-pvgh-6h63"
+    },
+    {
+     "id": "CVE-2026-42040",
+     "osv_id": "GHSA-xhjh-pmcv-23jw",
+     "cves": [
+      "CVE-2026-42040"
+     ],
+     "ids": [
+      "CVE-2026-42040",
+      "GHSA-xhjh-pmcv-23jw"
+     ],
+     "summary": "Axios: Null Byte Injection via Reverse-Encoding in AxiosURLSearchParams",
+     "cvss": 3.7,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+     "severity": "LOW",
+     "url": "https://osv.dev/vulnerability/GHSA-xhjh-pmcv-23jw"
+    }
    ]
   },
   {
@@ -764,10 +1647,48 @@
     "stars": 400,
     "age_days": 3700,
     "first_release": "2014-11-29",
-    "last_release": "2024-10-30"
+    "last_release": "2024-10-30",
+    "vuln_count": 2,
+    "max_cvss": 6.5
    },
    "depends_on": [
     "system:node"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2024-28849",
+     "osv_id": "GHSA-cxjh-pqwp-8mfp",
+     "cves": [
+      "CVE-2024-28849"
+     ],
+     "ids": [
+      "CVE-2024-28849",
+      "GHSA-cxjh-pqwp-8mfp"
+     ],
+     "summary": "follow-redirects' Proxy-Authorization header kept across hosts",
+     "cvss": 6.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-cxjh-pqwp-8mfp"
+    },
+    {
+     "id": "CVE-2026-40895",
+     "osv_id": "GHSA-r4q5-vmmm-2653",
+     "cves": [
+      "CVE-2026-40895"
+     ],
+     "ids": [
+      "CVE-2026-40895",
+      "GHSA-r4q5-vmmm-2653"
+     ],
+     "summary": "follow-redirects leaks Custom Authentication Headers to Cross-Domain Redirect Targets",
+     "cvss": 5.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-r4q5-vmmm-2653"
+    }
    ]
   },
   {
@@ -792,12 +1713,50 @@
     "stars": 2200,
     "age_days": 3700,
     "first_release": "2014-11-29",
-    "last_release": "2024-10-30"
+    "last_release": "2024-10-30",
+    "vuln_count": 2,
+    "max_cvss": 9.5
    },
    "depends_on": [
     "npm:asynckit",
     "npm:combined-stream",
     "npm:mime-types"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2025-7783",
+     "osv_id": "GHSA-fjxv-7rqg-78g4",
+     "cves": [
+      "CVE-2025-7783"
+     ],
+     "ids": [
+      "CVE-2025-7783",
+      "GHSA-fjxv-7rqg-78g4"
+     ],
+     "summary": "form-data uses unsafe random function in form-data for choosing boundary",
+     "cvss": 9.5,
+     "cvss_estimated": true,
+     "vector": "CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:N/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N",
+     "severity": "CRITICAL",
+     "url": "https://osv.dev/vulnerability/GHSA-fjxv-7rqg-78g4"
+    },
+    {
+     "id": "CVE-2026-12143",
+     "osv_id": "GHSA-hmw2-7cc7-3qxx",
+     "cves": [
+      "CVE-2026-12143"
+     ],
+     "ids": [
+      "CVE-2026-12143",
+      "GHSA-hmw2-7cc7-3qxx"
+     ],
+     "summary": "form-data: CRLF injection in form-data via unescaped multipart field names and filenames",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-hmw2-7cc7-3qxx"
+    }
    ]
   },
   {
@@ -822,11 +1781,14 @@
     "stars": 130,
     "age_days": 3600,
     "first_release": "2015-03-09",
-    "last_release": "2024-11-01"
+    "last_release": "2024-11-01",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:combined-stream",
@@ -850,11 +1812,14 @@
     "stars": 150,
     "age_days": 3500,
     "first_release": "2015-06-17",
-    "last_release": "2024-11-03"
+    "last_release": "2024-11-03",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:delayed-stream"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:delayed-stream",
@@ -878,11 +1843,14 @@
     "stars": 50,
     "age_days": 4000,
     "first_release": "2014-02-02",
-    "last_release": "2024-10-24"
+    "last_release": "2024-10-24",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:mime-types",
@@ -906,11 +1874,14 @@
     "stars": 1200,
     "age_days": 3800,
     "first_release": "2014-08-21",
-    "last_release": "2024-10-28"
+    "last_release": "2024-10-28",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:mime-db"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:mime-db",
@@ -934,11 +1905,14 @@
     "stars": 1900,
     "age_days": 3600,
     "first_release": "2015-03-09",
-    "last_release": "2024-11-01"
+    "last_release": "2024-11-01",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:chalk",
@@ -962,11 +1936,14 @@
     "stars": 21000,
     "age_days": 4600,
     "first_release": "2012-06-12",
-    "last_release": "2024-10-12"
+    "last_release": "2024-10-12",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:ansi-styles"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:ansi-styles",
@@ -990,11 +1967,14 @@
     "stars": 700,
     "age_days": 3600,
     "first_release": "2015-03-09",
-    "last_release": "2024-11-01"
+    "last_release": "2024-11-01",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:color-convert"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:color-convert",
@@ -1018,11 +1998,14 @@
     "stars": 700,
     "age_days": 3200,
     "first_release": "2016-04-12",
-    "last_release": "2024-11-09"
+    "last_release": "2024-11-09",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:color-name"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:color-name",
@@ -1046,11 +2029,14 @@
     "stars": 200,
     "age_days": 3900,
     "first_release": "2014-05-13",
-    "last_release": "2024-10-26"
+    "last_release": "2024-10-26",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:semver",
@@ -1074,11 +2060,14 @@
     "stars": 5000,
     "age_days": 4300,
     "first_release": "2013-04-08",
-    "last_release": "2024-10-18"
+    "last_release": "2024-10-18",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:uuid",
@@ -1102,10 +2091,33 @@
     "stars": 14000,
     "age_days": 4900,
     "first_release": "2011-08-17",
-    "last_release": "2024-10-06"
+    "last_release": "2024-10-06",
+    "vuln_count": 1,
+    "max_cvss": 7.5
    },
    "depends_on": [
     "system:node"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-41907",
+     "osv_id": "GHSA-w5hq-g745-h8pq",
+     "cves": [
+      "CVE-2026-41907",
+      "CVE-2026-41988"
+     ],
+     "ids": [
+      "CVE-2026-41907",
+      "CVE-2026-41988",
+      "GHSA-w5hq-g745-h8pq"
+     ],
+     "summary": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-w5hq-g745-h8pq"
+    }
    ]
   },
   {
@@ -1130,10 +2142,31 @@
     "stars": 31000,
     "age_days": 1800,
     "first_release": "2020-02-11",
-    "last_release": "2024-12-07"
+    "last_release": "2024-12-07",
+    "vuln_count": 1,
+    "max_cvss": 7.5
    },
    "depends_on": [
     "npm:tslib"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2023-54404",
+     "osv_id": "GHSA-mrhx-c7xc-m3w5",
+     "cves": [
+      "CVE-2023-54404"
+     ],
+     "ids": [
+      "CVE-2023-54404",
+      "GHSA-mrhx-c7xc-m3w5"
+     ],
+     "summary": "Zod can exhaust memory while validating oversized constrained collections",
+     "cvss": 7.5,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-mrhx-c7xc-m3w5"
+    }
    ]
   },
   {
@@ -1158,11 +2191,14 @@
     "stars": 1600,
     "age_days": 3300,
     "first_release": "2016-01-03",
-    "last_release": "2024-11-07"
+    "last_release": "2024-11-07",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:nanoid",
@@ -1186,10 +2222,82 @@
     "stars": 24000,
     "age_days": 3500,
     "first_release": "2015-06-17",
-    "last_release": "2024-11-03"
+    "last_release": "2024-11-03",
+    "vuln_count": 4,
+    "max_cvss": 7.4
    },
    "depends_on": [
     "system:node"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-73086",
+     "osv_id": "GHSA-xwg4-73v4-xw9w",
+     "cves": [
+      "CVE-2026-73086"
+     ],
+     "ids": [
+      "CVE-2026-73086",
+      "GHSA-xwg4-73v4-xw9w"
+     ],
+     "summary": "nanoid: Integer Overflow or Wraparound",
+     "cvss": 7.4,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+     "severity": "HIGH",
+     "url": "https://osv.dev/vulnerability/GHSA-xwg4-73v4-xw9w"
+    },
+    {
+     "id": "CVE-2026-67214",
+     "osv_id": "GHSA-28wg-ghj8-5hjv",
+     "cves": [
+      "CVE-2026-67214"
+     ],
+     "ids": [
+      "CVE-2026-67214",
+      "GHSA-28wg-ghj8-5hjv"
+     ],
+     "summary": "nanoid: non-secure generators can loop indefinitely with negative size",
+     "cvss": 5.9,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-28wg-ghj8-5hjv"
+    },
+    {
+     "id": "CVE-2026-67213",
+     "osv_id": "GHSA-2v37-7h3g-55p8",
+     "cves": [
+      "CVE-2026-67213"
+     ],
+     "ids": [
+      "CVE-2026-67213",
+      "GHSA-2v37-7h3g-55p8"
+     ],
+     "summary": "nanoid: custom generators can loop indefinitely when size is zero",
+     "cvss": 5.9,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-2v37-7h3g-55p8"
+    },
+    {
+     "id": "CVE-2024-55565",
+     "osv_id": "GHSA-mwcw-c2x4-8c55",
+     "cves": [
+      "CVE-2024-55565"
+     ],
+     "ids": [
+      "CVE-2024-55565",
+      "GHSA-mwcw-c2x4-8c55"
+     ],
+     "summary": "Predictable results in nanoid generation when given non-integer values",
+     "cvss": 4.3,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N",
+     "severity": "MEDIUM",
+     "url": "https://osv.dev/vulnerability/GHSA-mwcw-c2x4-8c55"
+    }
    ]
   },
   {
@@ -1214,11 +2322,14 @@
     "stars": 650,
     "age_days": 2000,
     "first_release": "2019-07-26",
-    "last_release": "2024-12-03"
+    "last_release": "2024-12-03",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:is-odd",
@@ -1242,11 +2353,14 @@
     "stars": 170,
     "age_days": 3200,
     "first_release": "2016-04-12",
-    "last_release": "2024-11-09"
+    "last_release": "2024-11-09",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:left-pad",
@@ -1270,11 +2384,14 @@
     "stars": 1100,
     "age_days": 3500,
     "first_release": "2015-06-17",
-    "last_release": "2024-11-03"
+    "last_release": "2024-11-03",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:tiny-nebraska-lib",
@@ -1298,11 +2415,14 @@
     "stars": 3,
     "age_days": 7400,
     "first_release": "2004-10-12",
-    "last_release": "2024-08-17"
+    "last_release": "2024-08-17",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "system:node"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:vitest",
@@ -1326,12 +2446,50 @@
     "stars": 11000,
     "age_days": 900,
     "first_release": "2022-07-30",
-    "last_release": "2024-12-25"
+    "last_release": "2024-12-25",
+    "vuln_count": 2,
+    "max_cvss": 9.8
    },
    "depends_on": [
     "npm:vite",
     "npm:chalk",
     "npm:debug"
+   ],
+   "vulns": [
+    {
+     "id": "CVE-2026-47429",
+     "osv_id": "GHSA-5xrq-8626-4rwp",
+     "cves": [
+      "CVE-2026-47429"
+     ],
+     "ids": [
+      "CVE-2026-47429",
+      "GHSA-5xrq-8626-4rwp"
+     ],
+     "summary": "When Vitest UI server is listening, arbitrary file can be read and executed",
+     "cvss": 9.8,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+     "severity": "CRITICAL",
+     "url": "https://osv.dev/vulnerability/GHSA-5xrq-8626-4rwp"
+    },
+    {
+     "id": "CVE-2025-24964",
+     "osv_id": "GHSA-9crc-q9x8-hgqq",
+     "cves": [
+      "CVE-2025-24964"
+     ],
+     "ids": [
+      "CVE-2025-24964",
+      "GHSA-9crc-q9x8-hgqq"
+     ],
+     "summary": "Vitest allows Remote Code Execution when accessing a malicious website while Vitest API server is listening",
+     "cvss": 9.6,
+     "cvss_estimated": false,
+     "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+     "severity": "CRITICAL",
+     "url": "https://osv.dev/vulnerability/GHSA-9crc-q9x8-hgqq"
+    }
    ]
   },
   {
@@ -1356,13 +2514,16 @@
     "stars": 24000,
     "age_days": 4000,
     "first_release": "2014-02-02",
-    "last_release": "2024-10-24"
+    "last_release": "2024-10-24",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:chalk",
     "npm:semver",
     "npm:debug"
-   ]
+   ],
+   "vulns": []
   },
   {
    "id": "npm:openapi-typescript-codegen",
@@ -1386,13 +2547,16 @@
     "stars": 2300,
     "age_days": 1300,
     "first_release": "2021-06-25",
-    "last_release": "2024-12-17"
+    "last_release": "2024-12-17",
+    "vuln_count": 0,
+    "max_cvss": null
    },
    "depends_on": [
     "npm:axios",
     "npm:eslint",
     "npm:semver"
-   ]
+   ],
+   "vulns": []
   }
  ],
  "warnings": [
